@@ -53,20 +53,40 @@ if (!$is_still_available) {
     exit();
 }
 
-// 6. Insert the appointment into the database
-try {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Ensure all required fields are present
+    if (!isset($_SESSION['user_id'], $_POST['doctor_id'], $_POST['clinic_id'], $_POST['date'], $_POST['time'])) {
+        $_SESSION['error'] = 'Incomplete booking information. Please try again.';
+        header('Location: search.php'); // Redirect to a safe starting point
+        exit();
+    }
+
+    $user_id = $_SESSION['user_id'];
+    $doctor_id = $_POST['doctor_id'];
+    $clinic_id = $_POST['clinic_id'];
+    $appointment_date = $_POST['date'];
+    $appointment_time = $_POST['time'];
+
+    // Extra validation to ensure clinic_id is not empty
+    if (empty($clinic_id)) {
+        $_SESSION['error'] = 'The clinic ID is missing. Please select a doctor from the list.';
+        header('Location: search.php');
+        exit();
+    }
+
+    // Create appointment
     $sql = "INSERT INTO appointments (user_id, doctor_id, clinic_id, appointment_date, appointment_time, status) VALUES (?, ?, ?, ?, ?, 'confirmed')";
     $stmt = $conn->prepare($sql);
-    $stmt->execute([$user_id, $doctor_id, $clinic_id, $appointment_date, $appointment_time]);
 
-    // 7. Redirect to a success page (e.g., patient dashboard)
-    $_SESSION['success_message'] = 'تم تأكيد حجزك بنجاح!';
-    header('Location: patient/index.php'); // Assuming a patient dashboard exists
-    exit();
-
-} catch (PDOException $e) {
-    error_log('Booking submission error: ' . $e->getMessage());
-    $_SESSION['error_message'] = 'حدث خطأ فني أثناء تأكيد الحجز. الرجاء المحاولة لاحقاً.';
-    header('Location: book_appointment.php?doctor_id=' . $doctor_id);
-    exit();
+    if ($stmt->execute([$user_id, $doctor_id, $clinic_id, $appointment_date, $appointment_time])) {
+        $_SESSION['success'] = 'Appointment booked successfully!';
+        // Redirect to a confirmation or appointments list page
+        header('Location: appointments.php');
+        exit();
+    } else {
+        $_SESSION['error'] = 'Failed to book appointment due to a database error. Please try again.';
+        // Redirect back to the booking page for the specific doctor
+        header('Location: book_appointment.php?doctor_id=' . $doctor_id);
+        exit();
+    }
 }

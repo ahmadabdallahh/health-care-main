@@ -6,21 +6,29 @@ require_once 'includes/functions.php';
 
 
 // Get doctor ID from URL
-$doctor_id = isset($_GET['doctor_id']) ? (int)$_GET['doctor_id'] : 0;
-if ($doctor_id === 0) {
+// Get Doctor ID and Details
+if (!isset($_GET['doctor_id']) || empty($_GET['doctor_id'])) {
+    $_SESSION['error'] = 'No doctor selected.';
+    header('Location: search.php');
+    exit();
+}
+$doctor_id = $_GET['doctor_id'];
+
+$stmt = $conn->prepare("SELECT u.username AS doctor_name FROM doctors d JOIN users u ON d.user_id = u.id WHERE d.id = ?");
+$stmt->execute([$doctor_id]);
+$doctor = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$doctor) {
+    $_SESSION['error'] = 'Doctor not found.';
     header('Location: search.php');
     exit();
 }
 
-// Fetch doctor details
-$doctor = get_doctor_by_id($doctor_id);
-if (!$doctor) {
-    // Redirect if doctor not found
-    header('Location: search.php?error=notfound');
-    exit();
-}
+// Fetch Clinics for Dropdown
+$clinics_stmt = $conn->query("SELECT id, name FROM clinics ORDER BY name");
+$clinics = $clinics_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$pageTitle = 'حجز موعد مع ' . htmlspecialchars($doctor['full_name']);
+$pageTitle = 'حجز موعد مع ' . htmlspecialchars($doctor['doctor_name']);
 ?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -95,6 +103,7 @@ $pageTitle = 'حجز موعد مع ' . htmlspecialchars($doctor['full_name']);
             <form id="booking-form" action="submit_booking.php" method="POST">
                 <input type="hidden" name="doctor_id" value="<?php echo $doctor_id; ?>">
 
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10">
 
                     <!-- Step 1: Select Date -->
@@ -111,9 +120,22 @@ $pageTitle = 'حجز موعد مع ' . htmlspecialchars($doctor['full_name']);
                         </div>
                     </div>
 
-                    <!-- Step 2: Select Time -->
-                    <div>
-                        <h2 class="text-xl font-bold text-gray-800 mb-4">٢. اختر الوقت المتاح</h2>
+                    <!-- Step 2: Select Clinic -->
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4">اختر العيادة</h4>
+                        <select name="clinic_id" required class="w-full p-4 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                            <option value="" disabled selected>-- الرجاء اختيار العيادة --</option>
+                            <?php foreach ($clinics as $clinic): ?>
+                                <option value="<?php echo htmlspecialchars($clinic['id']); ?>">
+                                    <?php echo htmlspecialchars($clinic['name']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <!-- Step 3: Select Time -->
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4">اختر تاريخاً</h4>
                         <div id="time-slots-container" class="relative min-h-[150px] bg-gray-100 p-4 rounded-lg">
                             <!-- Placeholder -->
                             <div id="time-slots-placeholder" class="absolute inset-0 flex items-center justify-center text-center">

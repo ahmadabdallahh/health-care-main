@@ -285,10 +285,7 @@ function is_logged_in() {
     return $session_manager->is_logged_in();
 }
 
-function get_current_user() {
-    global $session_manager;
-    return $session_manager->get_user_data();
-}
+// Removed duplicate get_current_user() function to solve redeclaration error
 
 function has_role($role) {
     global $session_manager;

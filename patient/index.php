@@ -4,7 +4,7 @@ require_once '../config.php';
 require_once '../includes/functions.php';
 
 // Ensure user is logged in as a patient
-if (!is_logged_in() || $_SESSION['user_type'] !== 'patient') {
+if (!is_logged_in() || $_SESSION['role'] !== 'patient') {
     header('Location: ' . BASE_URL . 'login.php');
     exit();
 }

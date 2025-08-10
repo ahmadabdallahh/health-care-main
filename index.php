@@ -53,8 +53,8 @@ $specialties = get_all_specialties();
                     <?php if (is_logged_in()): ?>
                         <?php
                             $dashboard_url = '#';
-                            if (isset($_SESSION['user_type'])) {
-                                switch ($_SESSION['user_type']) {
+                                        if (isset($_SESSION['role'])) {
+                switch ($_SESSION['role']) {
                                     case 'admin': $dashboard_url = 'admin/index.php'; break;
                                     case 'doctor': $dashboard_url = 'doctor/index.php'; break;
                                     case 'patient': $dashboard_url = 'patient/index.php'; break;

@@ -4,7 +4,7 @@ require_once '../config.php';
 require_once '../includes/functions.php';
 
 // Ensure user is logged in as an admin
-if (!is_logged_in() || $_SESSION['user_type'] !== 'admin') {
+if (!is_logged_in() || $_SESSION['role'] !== 'admin') {
     header('Location: ' . BASE_URL . 'login.php');
     exit();
 }

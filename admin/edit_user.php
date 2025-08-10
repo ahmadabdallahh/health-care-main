@@ -16,9 +16,9 @@ $user_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $full_name = trim($_POST['full_name']);
     $email = trim($_POST['email']);
-    $user_type = trim($_POST['user_type']);
+    $role = trim($_POST['role']);
 
-    if (update_user($conn, $user_id, $full_name, $email, $user_type)) {
+    if (update_user($conn, $user_id, $full_name, $email, $role)) {
         // Redirect with success message (optional)
         redirect('manage_users.php');
     } else {
@@ -79,12 +79,12 @@ $page_title = "تعديل المستخدم";
                         </div>
 
                         <div class="mb-6">
-                            <label for="user_type" class="block text-gray-700 text-sm font-bold mb-2">نوع المستخدم</label>
-                            <select id="user_type" name="user_type" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                                <option value="patient" <?php echo ($user['user_type'] === 'patient') ? 'selected' : ''; ?>>مريض</option>
-                                <option value="doctor" <?php echo ($user['user_type'] === 'doctor') ? 'selected' : ''; ?>>طبيب</option>
-                                <option value="admin" <?php echo ($user['user_type'] === 'admin') ? 'selected' : ''; ?>>مسؤول</option>
-                                <option value="hospital" <?php echo ($user['user_type'] === 'hospital') ? 'selected' : ''; ?>>مستشفى</option>
+                            <label for="role" class="block text-gray-700 text-sm font-bold mb-2">نوع المستخدم</label>
+                            <select id="role" name="role" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <option value="patient" <?php echo ($user['role'] === 'patient') ? 'selected' : ''; ?>>مريض</option>
+                                <option value="doctor" <?php echo ($user['role'] === 'doctor') ? 'selected' : ''; ?>>طبيب</option>
+                                <option value="admin" <?php echo ($user['role'] === 'admin') ? 'selected' : ''; ?>>مسؤول</option>
+                                <option value="hospital" <?php echo ($user['role'] === 'hospital') ? 'selected' : ''; ?>>مستشفى</option>
                             </select>
                         </div>
 

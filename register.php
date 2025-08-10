@@ -17,7 +17,7 @@ $form_data = [
     'phone' => '',
     'date_of_birth' => '',
     'gender' => '',
-    'user_type' => ''
+    'role' => ''
 ];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -115,22 +115,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $db = new Database();
             $conn = $db->getConnection();
 
-            $stmt = $conn->prepare("SELECT id FROM users WHERE email = ? OR username = ?");
-            $stmt->execute([$form_data['email'], $form_data['username']]);
+            try {
+                $conn->beginTransaction(); // Start transaction
 
-            if ($stmt->fetch()) {
-                $errors['email'] = 'البريد الإلكتروني أو اسم المستخدم موجود مسبقاً';
-            } else {
+                $stmt = $conn->prepare("SELECT id FROM users WHERE email = ? OR username = ?");
+                $stmt->execute([$form_data['email'], $form_data['username']]);
+
+                if ($stmt->fetch()) {
+                    $errors['email'] = 'البريد الإلكتروني أو اسم المستخدم موجود مسبقاً';
+                    $conn->rollBack(); // Rollback if user exists
+                } else {
                 // Hash the password securely
                 $hashed_password = hash_password($password);
-                
-                // Set default user_type if not provided (for regular users)
-                $user_type = !empty($form_data['user_type']) ? $form_data['user_type'] : 'user';
-                
-                // Prepare SQL statement with ALL required fields including user_type
+
+                // Set default role if not provided (for regular users)
+                $role = !empty($form_data['role']) ? $form_data['role'] : 'user';
+
+                // Prepare SQL statement with ALL required fields including role
                 $stmt = $conn->prepare(
-                    "INSERT INTO users (username, full_name, email, password, phone, date_of_birth, gender, user_type) 
-                     VALUES (:username, :full_name, :email, :password, :phone, :date_of_birth, :gender, :user_type)"
+                    "INSERT INTO users (username, full_name, email, password, phone, date_of_birth, gender, role)
+                     VALUES (:username, :full_name, :email, :password, :phone, :date_of_birth, :gender, :role)"
                 );
 
                 // Execute with all parameters
@@ -142,17 +146,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     ':phone' => $form_data['phone'],
                     ':date_of_birth' => $form_data['date_of_birth'],
                     ':gender' => $form_data['gender'],
-                    ':user_type' => $user_type
+                    ':role' => $role
                 ]);
 
-                if ($stmt->rowCount()) {
-                    $success = 'تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول.';
-                    foreach ($form_data as $key => $value) {
-                        $form_data[$key] = '';
-                    }
-                } else {
-                    $errors['general'] = 'حدث خطأ أثناء إنشاء الحساب.';
+                $user_id = $conn->lastInsertId();
+
+                // If the user is a doctor, add them to the doctors table as well
+                if ($role === 'doctor') {
+                    $stmt_doctor = $conn->prepare(
+                        "INSERT INTO doctors (user_id, full_name, email, phone, is_active, image)
+                         VALUES (:user_id, :full_name, :email, :phone, 1, :image)"
+                    );
+                    $stmt_doctor->execute([
+                        ':user_id' => $user_id,
+                        ':full_name' => $form_data['full_name'],
+                        ':email' => $form_data['email'],
+                        ':phone' => $form_data['phone'],
+                        ':image' => basename($profile_image_path) // Save only the image name
+                    ]);
                 }
+
+                $conn->commit(); // Commit the transaction
+                $success = 'تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول.';
+                // Clear form data on success
+                foreach ($form_data as $key => $value) {
+                    $form_data[$key] = '';
+                }
+            } // End of the 'else' block for if user exists
+            } catch (PDOException $e) {
+                $conn->rollBack(); // Rollback on error
+                $errors['general'] = 'حدث خطأ فني أثناء إنشاء الحساب. يرجى المحاولة مرة أخرى.';
+                // Optional: Log the detailed error for debugging: error_log($e->getMessage());
             }
         }
     }
@@ -257,14 +281,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 </select>
                                 <?php if (isset($errors['gender'])): ?><span class="error-message"><?php echo $errors['gender']; ?></span><?php endif; ?>
                             </div>
-                            <div class="form-group <?php echo isset($errors['user_type']) ? 'error' : ''; ?>">
-                                <label for="user_type">نوع الحساب</label>
-                                <select id="user_type" name="user_type" required>
-                                    <option value="" disabled <?php echo empty($form_data['user_type']) ? 'selected' : ''; ?>>-- اختر --</option>
-                                    <option value="patient" <?php echo ($form_data['user_type'] == 'patient') ? 'selected' : ''; ?>>مريض</option>
-                                    <option value="doctor" <?php echo ($form_data['user_type'] == 'doctor') ? 'selected' : ''; ?>>طبيب</option>
+                            <div class="form-group <?php echo isset($errors['role']) ? 'error' : ''; ?>">
+                                <label for="role">نوع الحساب</label>
+                                <select id="role" name="role" required>
+                                    <option value="" disabled <?php echo empty($form_data['role']) ? 'selected' : ''; ?>>-- اختر --</option>
+                                    <option value="patient" <?php echo ($form_data['role'] == 'patient') ? 'selected' : ''; ?>>مريض</option>
+                                    <option value="doctor" <?php echo ($form_data['role'] == 'doctor') ? 'selected' : ''; ?>>طبيب</option>
                                 </select>
-                                <?php if (isset($errors['user_type'])): ?><span class="error-message"><?php echo $errors['user_type']; ?></span><?php endif; ?>
+                                <?php if (isset($errors['role'])): ?><span class="error-message"><?php echo $errors['role']; ?></span><?php endif; ?>
                             </div>
                         </div>
 

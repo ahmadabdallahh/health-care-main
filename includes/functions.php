@@ -12,7 +12,7 @@ require_once __DIR__ . '/../config.php';
 
 // Define Base URL for asset linking if not already defined
 if (!defined('BASE_URL')) {
-    define('BASE_URL', 'http://localhost/app-demo/');
+    define('BASE_URL', 'http://localhost/app-demo-test/');
 }
 
 // Start session if not already started
@@ -60,12 +60,16 @@ function is_logged_in()
 function get_logged_in_user()
 {
     if (!is_logged_in()) {
-        return false;
+        return null;
     }
 
     try {
         $db = new Database();
         $conn = $db->getConnection();
+
+        if (!$conn) {
+            return null;
+        }
 
         $stmt = $conn->prepare("SELECT * FROM users WHERE id = ?");
         $stmt->execute([$_SESSION['user_id']]);
@@ -82,7 +86,7 @@ function get_logged_in_user()
 
     } catch (Exception $e) {
         error_log("Get user error: " . $e->getMessage());
-        return false;
+        return null;
     }
 }
 
@@ -93,7 +97,7 @@ function get_logged_in_user()
  */
 function check_user_role($role)
 {
-    return is_logged_in() && isset($_SESSION['user_type']) && $_SESSION['user_type'] === $role;
+    return is_logged_in() && isset($_SESSION['role']) && $_SESSION['role'] === $role;
 }
 
 /**
@@ -417,7 +421,7 @@ function check_user_permission($required_type) {
         return false;
     }
 
-    $user_type = $_SESSION['user_type'] ?? '';
+            $user_type = $_SESSION['role'] ?? '';
 
     // الأدمن لديه جميع الصلاحيات
     if ($user_type === 'admin') {
@@ -479,7 +483,7 @@ function login_user($email, $password) {
         }
 
         // البحث عن المستخدم
-        $stmt = $conn->prepare("SELECT id, full_name, email, password, user_type, is_active, failed_login_attempts, last_failed_login FROM users WHERE email = ? AND is_active = 1");
+        $stmt = $conn->prepare("SELECT id, full_name, email, password, role, is_active, failed_login_attempts, last_failed_login FROM users WHERE email = ? AND is_active = 1");
         $stmt->execute([$email]);
         $user = $stmt->fetch();
 
@@ -515,7 +519,7 @@ function login_user($email, $password) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['full_name'] = $user['full_name'];
         $_SESSION['email'] = $user['email'];
-        $_SESSION['user_type'] = $user['user_type'];
+        $_SESSION['role'] = $user['role'];
         $_SESSION['login_time'] = time();
         $_SESSION['ip_address'] = $_SERVER['REMOTE_ADDR'] ?? '';
         $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
@@ -746,7 +750,7 @@ function get_doctor_details($doctor_id) {
 
     } catch (Exception $e) {
         error_log("Get doctor details error: " . $e->getMessage());
-        return false;
+        return null;
     }
 }
 
@@ -804,11 +808,11 @@ function create_appointment($patient_id, $doctor_id, $appointment_date, $appoint
             return $conn->lastInsertId();
         }
 
-        return false;
+        return null;
 
     } catch (Exception $e) {
         error_log("Create appointment error: " . $e->getMessage());
-        return false;
+        return null;
     }
 }
 
@@ -927,7 +931,7 @@ function search_doctors($search_query, $specialty_id) {
 function get_doctor_by_id($doctor_id) {
     global $conn;
     if (!$conn) {
-        return false;
+        return null;
     }
 
     $sql = "SELECT
@@ -947,7 +951,7 @@ function get_doctor_by_id($doctor_id) {
         return $stmt->fetch();
     } catch (PDOException $e) {
         error_log('Get doctor by ID error: ' . $e->getMessage());
-        return false;
+        return null;
     }
 }
 
@@ -1175,7 +1179,7 @@ function get_patient_appointment_count($pdo, $user_id, $status) {
 
 function get_recent_patients($conn, $limit = 5) {
     try {
-        $sql = "SELECT id, full_name, email, created_at, status FROM users WHERE user_type = 'patient' ORDER BY created_at DESC LIMIT :limit";
+        $sql = "SELECT id, full_name, email, created_at, status FROM users WHERE role = 'patient' ORDER BY created_at DESC LIMIT :limit";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
@@ -1188,7 +1192,7 @@ function get_recent_patients($conn, $limit = 5) {
 
 function get_users_by_type($conn, $user_type) {
     try {
-        $stmt = $conn->prepare("SELECT id, full_name, email, created_at, status FROM users WHERE user_type = ?");
+        $stmt = $conn->prepare("SELECT id, full_name, email, created_at, status FROM users WHERE role = ?");
         $stmt->execute([$user_type]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
@@ -1199,7 +1203,7 @@ function get_users_by_type($conn, $user_type) {
 
 // Function to get all users from the database
 function get_all_users($pdo) {
-    $sql = "SELECT id, full_name, username, email, user_type, created_at FROM users ORDER BY created_at DESC";
+    $sql = "SELECT id, full_name, username, email, role, created_at FROM users ORDER BY created_at DESC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -1236,24 +1240,42 @@ function get_all_appointments($conn) {
 // Function to get a single user by their ID
 function get_user_by_id($conn, $user_id) {
     try {
-        $stmt = $conn->prepare("SELECT id, full_name, email, user_type FROM users WHERE id = ?");
+        $stmt = $conn->prepare("SELECT * FROM users WHERE id = ?");
         $stmt->execute([$user_id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        error_log('Get user by ID error: ' . $e->getMessage());
+        error_log("Error getting user by ID: " . $e->getMessage());
         return false;
+    }
+}
+
+/**
+ * Get user's full name by ID
+ * @param PDO $conn Database connection
+ * @param int $user_id User ID
+ * @return string User's full name or empty string if not found
+ */
+function get_user_name($conn, $user_id) {
+    try {
+        $stmt = $conn->prepare("SELECT full_name FROM users WHERE id = ?");
+        $stmt->execute([$user_id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? $result['full_name'] : '';
+    } catch (PDOException $e) {
+        error_log("Error getting user name: " . $e->getMessage());
+        return '';
     }
 }
 
 // Function to update user data
 function update_user($conn, $user_id, $full_name, $email, $user_type) {
     try {
-        $sql = "UPDATE users SET full_name = ?, email = ?, user_type = ? WHERE id = ?";
+        $sql = "UPDATE users SET full_name = ?, email = ?, role = ? WHERE id = ?";
         $stmt = $conn->prepare($sql);
         return $stmt->execute([$full_name, $email, $user_type, $user_id]);
     } catch (PDOException $e) {
         error_log('Update user error: ' . $e->getMessage());
-        return false;
+        return null;
     }
 }
 
@@ -1264,7 +1286,7 @@ function delete_user($conn, $user_id) {
         return $stmt->execute([$user_id]);
     } catch (PDOException $e) {
         error_log('Delete user error: ' . $e->getMessage());
-        return false;
+        return null;
     }
 }
 
@@ -1319,7 +1341,7 @@ function get_all_doctors_with_details($pdo) {
                 d.status
             FROM users u
             JOIN doctors d ON u.id = d.user_id
-            WHERE u.user_type = 'doctor'
+            WHERE u.role = 'doctor'
             ORDER BY d.status ASC, u.created_at DESC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
@@ -1362,8 +1384,8 @@ function delete_doctor_by_user_id($pdo, $user_id) {
         return true;
     } catch (Exception $e) {
         $pdo->rollBack();
-        // You might want to log the error message: $e->getMessage()
-        return false;
+        error_log('Delete doctor error: ' . $e->getMessage());
+        return null;
     }
 }
 
@@ -1398,7 +1420,7 @@ function get_public_available_slots($doctor_id, $date) {
         $booked_stmt = $conn->prepare($booked_sql);
         $booked_stmt->execute([$doctor_id, $date]);
         $booked_times_raw = $booked_stmt->fetchAll(PDO::FETCH_COLUMN, 0);
-        
+
         $booked_times = array_map(function($time) {
             return date('H:i', strtotime($time));
         }, $booked_times_raw);
@@ -1421,6 +1443,75 @@ function get_public_available_slots($doctor_id, $date) {
     } catch (PDOException $e) {
         error_log('Database error in get_public_available_slots: ' . $e->getMessage());
         return ['error' => 'A database error occurred.'];
+    }
+}
+
+/**
+ * Get doctor dashboard statistics
+ * @param PDO $pdo
+ * @param int $doctor_id
+ * @return array
+ */
+function get_doctor_dashboard_stats($pdo, $doctor_id) {
+    try {
+        // Get today's appointments count
+        $today = date('Y-m-d');
+        $today_appointments = get_doctor_appointment_count($pdo, $doctor_id, 'confirmed');
+
+        // Get upcoming appointments count (next 7 days)
+        $upcoming_sql = "SELECT COUNT(*) FROM appointments
+                         WHERE doctor_id = ?
+                         AND appointment_date >= ?
+                         AND appointment_date <= DATE_ADD(?, INTERVAL 7 DAY)
+                         AND status IN ('confirmed', 'pending')";
+        $upcoming_stmt = $pdo->prepare($upcoming_sql);
+        $upcoming_stmt->execute([$doctor_id, $today, $today]);
+        $upcoming_appointments = $upcoming_stmt->fetchColumn();
+
+        // Get total unique patients count
+        $total_patients = get_doctor_patient_count($pdo, $doctor_id);
+
+        return [
+            'today_appointments' => $today_appointments,
+            'upcoming_appointments' => $upcoming_appointments,
+            'total_patients' => $total_patients
+        ];
+    } catch (Exception $e) {
+        error_log('Get doctor dashboard stats error: ' . $e->getMessage());
+        return [
+            'today_appointments' => 0,
+            'upcoming_appointments' => 0,
+            'total_patients' => 0
+        ];
+    }
+}
+
+/**
+ * Get doctor's upcoming appointments
+ * @param PDO $pdo
+ * @param int $doctor_id
+ * @param int $limit
+ * @return array
+ */
+function get_doctor_upcoming_appointments($pdo, $doctor_id, $limit = 5) {
+    try {
+        $today = date('Y-m-d');
+        $sql = "SELECT a.*, u.full_name as patient_name, u.email as patient_email
+                FROM appointments a
+                JOIN users u ON a.patient_id = u.id
+                WHERE a.doctor_id = ?
+                AND a.appointment_date >= ?
+                AND a.status IN ('confirmed', 'pending')
+                ORDER BY a.appointment_date ASC, a.appointment_time ASC
+                LIMIT ?";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$doctor_id, $today, $limit]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        error_log('Get doctor upcoming appointments error: ' . $e->getMessage());
+        return [];
     }
 }
 

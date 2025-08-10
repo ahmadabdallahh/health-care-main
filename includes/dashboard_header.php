@@ -42,8 +42,8 @@
     <!-- Profile Dropdown -->
     <div class="relative">
         <button class="flex items-center space-x-3 focus:outline-none">
-            <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($_SESSION['full_name'] ?? 'U'); ?>&background=random&color=fff" alt="User Avatar" class="w-10 h-10 rounded-full object-cover">
-            <span class="hidden md:inline-block font-semibold text-gray-700"><?php echo htmlspecialchars($_SESSION['full_name'] ?? 'المستخدم'); ?></span>
+            <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($_SESSION['user_name'] ?? 'U'); ?>&background=random&color=fff" alt="User Avatar" class="w-10 h-10 rounded-full object-cover">
+            <span class="hidden md:inline-block font-semibold text-gray-700"><?php echo htmlspecialchars($_SESSION['user_name'] ?? 'المستخدم'); ?></span>
         </button>
         <!-- Dropdown menu here if needed -->
     </div>

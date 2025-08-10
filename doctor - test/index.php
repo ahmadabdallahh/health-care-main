@@ -16,7 +16,7 @@ $pdo = $conn;
 
 // Get Doctor's name
 $doctor_id = $_SESSION['user_id'];
-$doctor_name = get_user_name($pdo, $doctor_id);
+$doctor_name = $_SESSION['user_name'] ?? 'Doctor';
 
 // Fetch dashboard data
 $stats = get_doctor_dashboard_stats($pdo, $doctor_id);
@@ -32,6 +32,9 @@ $upcoming_appointments = get_doctor_upcoming_appointments($pdo, $doctor_id, 5);
 
     <!-- Main content -->
     <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Navbar -->
+        <?php include '../includes/dashboard_navbar.php'; ?>
+
         <!-- Page content -->
         <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-200 dark:bg-gray-800">
             <div class="container mx-auto px-6 py-8">

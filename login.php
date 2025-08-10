@@ -27,27 +27,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             } else {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['full_name'];
-                $_SESSION['user_type'] = $user['user_type'];
+                $_SESSION['role'] = $user['role'];
 
-                // Redirect based on user type
-                switch ($user['user_type']) {
-                    case 'admin':
-                        header("Location: admin/index.php");
-                        exit();
-                    case 'doctor':
-                        header("Location: doctor/index.php");
-                        exit();
-                    case 'user': // Added to handle the 'User' role
-                    case 'patient': // Keep 'patient' for backward compatibility
-                        header("Location: patient/index.php");
-                        exit();
-                    case 'hospital':
-                        header("Location: hospital/index.php");
-                        exit();
-                    default: // Fallback for any other user type
-                        header("Location: index.php");
-                        exit();
+                // Final, corrected redirection logic
+                $user_role = $user['role'];
+
+                if ($user_role === 'admin') {
+                    header("Location: admin/index.php");
+                    exit();
                 }
+
+                if ($user_role === 'doctor') {
+                    header("Location: doctor/index.php");
+                    exit();
+                }
+
+                if ($user_role === 'user' || $user_role === 'patient') {
+                    header("Location: patient/index.php");
+                    exit();
+                }
+
+                // Default fallback if no role matches
+                header("Location: index.php");
+                exit();
             }
         }
     }

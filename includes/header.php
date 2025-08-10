@@ -32,11 +32,11 @@ if (!function_exists('is_logged_in')) {
                 <a href="/app-demo/index.php" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">الرئيسية</a>
                 <a href="/app-demo/search.php" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">البحث</a>
                 <?php if (is_logged_in()): ?>
-                    <?php if ($_SESSION['user_type'] === 'patient'): ?>
-                        <a href="/app-demo/patient/index.php" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">لوحة التحكم</a>
-                        <a href="/app-demo/patient/appointments.php" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">مواعيدي</a>
-                    <?php elseif ($_SESSION['user_type'] === 'doctor'): ?>
-                        <a href="/app-demo/doctor/index.php" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">لوحة التحكم</a>
+                                    <?php if ($_SESSION['role'] === 'patient'): ?>
+                    <a href="/app-demo/patient/index.php" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">لوحة التحكم</a>
+                    <a href="/app-demo/patient/appointments.php" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">مواعيدي</a>
+                <?php elseif ($_SESSION['role'] === 'doctor'): ?>
+                    <a href="/app-demo/doctor/index.php" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">لوحة التحكم</a>
                     <?php endif; ?>
                     <a href="/app-demo/logout.php" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition">تسجيل الخروج</a>
                 <?php else: ?>
@@ -68,10 +68,10 @@ if (!function_exists('is_logged_in')) {
             <a href="/app-demo/index.php" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">الرئيسية</a>
             <a href="/app-demo/search.php" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">البحث</a>
             <?php if (is_logged_in()): ?>
-                <?php if ($_SESSION['user_type'] === 'patient'): ?>
+                <?php if ($_SESSION['role'] === 'patient'): ?>
                     <a href="/app-demo/patient/index.php" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">لوحة التحكم</a>
                     <a href="/app-demo/patient/appointments.php" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">مواعيدي</a>
-                <?php elseif ($_SESSION['user_type'] === 'doctor'): ?>
+                <?php elseif ($_SESSION['role'] === 'doctor'): ?>
                     <a href="/app-demo/doctor/index.php" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">لوحة التحكم</a>
                 <?php endif; ?>
                 <a href="/app-demo/logout.php" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">تسجيل الخروج</a>

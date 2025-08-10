@@ -2,8 +2,8 @@
 // Get the current page to set the 'active' class
 $current_page = basename($_SERVER['PHP_SELF']);
 
-// Get user role from session - FIX: Changed from user_role to user_type for consistency
-$user_type = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : '';
+// Get user role from session - FIX: Changed from user_type to role for consistency
+$user_type = isset($_SESSION['role']) ? $_SESSION['role'] : '';
 
 $is_admin = ($user_type === 'admin');
 $is_doctor = ($user_type === 'doctor');

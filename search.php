@@ -45,7 +45,7 @@ $pageTitle = 'نتائج البحث';
             </div>
             <div class="flex items-center space-x-2 space-x-reverse">
                 <?php if (isset($_SESSION['user_name'])): ?>
-                    <a href="<?php echo ($_SESSION['user_type'] === 'doctor' ? 'doctor' : 'patient'); ?>/index.php" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">لوحة التحكم</a>
+                    <a href="<?php echo ($_SESSION['role'] === 'doctor' ? 'doctor' : 'patient'); ?>/index.php" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">لوحة التحكم</a>
                     <a href="logout.php" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition">تسجيل الخروج</a>
                 <?php else: ?>
                     <a href="login.php" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">تسجيل الدخول</a>

@@ -1531,4 +1531,20 @@ function get_all_doctor_appointments($pdo, $doctor_id) {
     }
 }
 
+
+function get_hospital_by_id($id) {
+    global $conn;
+    $stmt = $conn->prepare("SELECT * FROM hospitals WHERE id = ?");
+    $stmt->execute([$id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+
+function get_appointments_by_user($user_id) {
+    global $conn;
+    $stmt = $conn->prepare("SELECT * FROM appointments WHERE user_id = ? ORDER BY appointment_date DESC, appointment_time DESC");
+    $stmt->execute([$user_id]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 ?>

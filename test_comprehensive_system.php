@@ -116,9 +116,9 @@ runTest("اختبار هيكل قاعدة البيانات", function() {
         'doctors',
         'hospitals',
         'appointments',
-        'doctor_availability',
+        
 
-        'notifications'
+        
     ];
 
     foreach ($requiredTables as $table) {

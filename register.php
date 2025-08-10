@@ -121,9 +121,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($stmt->fetch()) {
                 $errors['email'] = 'البريد الإلكتروني أو اسم المستخدم موجود مسبقاً';
             } else {
+                // Hash the password securely
                 $hashed_password = hash_password($password);
-                $stmt = $conn->prepare("INSERT INTO users (username, full_name, email, password, phone, date_of_birth, gender) VALUES (:username, :full_name, :email, :password, :phone, :date_of_birth, :gender)");
+                
+                // Set default user_type if not provided (for regular users)
+                $user_type = !empty($form_data['user_type']) ? $form_data['user_type'] : 'user';
+                
+                // Prepare SQL statement with ALL required fields including user_type
+                $stmt = $conn->prepare(
+                    "INSERT INTO users (username, full_name, email, password, phone, date_of_birth, gender, user_type) 
+                     VALUES (:username, :full_name, :email, :password, :phone, :date_of_birth, :gender, :user_type)"
+                );
 
+                // Execute with all parameters
                 $stmt->execute([
                     ':username' => $form_data['username'],
                     ':full_name' => $form_data['full_name'],
@@ -132,8 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     ':phone' => $form_data['phone'],
                     ':date_of_birth' => $form_data['date_of_birth'],
                     ':gender' => $form_data['gender'],
-
-
+                    ':user_type' => $user_type
                 ]);
 
                 if ($stmt->rowCount()) {

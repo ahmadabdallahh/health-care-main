@@ -29,12 +29,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION['user_name'] = $user['full_name'];
                 $_SESSION['user_type'] = $user['user_type'];
 
+                // Redirect based on user type
                 switch ($user['user_type']) {
-                    case 'admin': header("Location: admin/index.php"); exit();
-                    case 'doctor': header("Location: doctor/index.php"); exit();
-                    case 'patient': header("Location: patient/index.php"); exit();
-                    case 'hospital': header("Location: hospital/index.php"); exit();
-                    default: header("Location: index.php"); exit();
+                    case 'admin':
+                        header("Location: admin/index.php");
+                        exit();
+                    case 'doctor':
+                        header("Location: doctor/index.php");
+                        exit();
+                    case 'user': // Added to handle the 'User' role
+                    case 'patient': // Keep 'patient' for backward compatibility
+                        header("Location: patient/index.php");
+                        exit();
+                    case 'hospital':
+                        header("Location: hospital/index.php");
+                        exit();
+                    default: // Fallback for any other user type
+                        header("Location: index.php");
+                        exit();
                 }
             }
         }

@@ -208,8 +208,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         .btn-primary {
-            background: var(--primary-blue);
             color: white;
+            background: blue !important;
         }
 
         .btn-primary:hover {

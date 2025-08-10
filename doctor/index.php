@@ -1,10 +1,10 @@
 <?php
 session_start();
-require_once '../includes/functions.php';
-require_once '../config.php';
+require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../config.php';
 
 // Check if the user is a doctor, otherwise redirect to login
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'doctor') {
+if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'doctor') {
     header('Location: ../login.php');
     exit();
 }
@@ -59,9 +59,10 @@ $upcoming_appointments = get_doctor_upcoming_appointments($pdo, $doctor_id, 5);
 
                         <!-- Card 2: Upcoming Appointments -->
                         <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800 border-l-4 border-green-500">
-                            <div class="p-3 mr-4 text-green-500 bg-green-100 rounded-full dark:text-green-100 dark:bg-green-500">
+                            <div class="p-3 mr-4 text-green-500 bg-green-100 rounded-full dark:text-green-100 dark:bg-blue-500">
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm10 5H4v8h12V7z" clip-rule="evenodd"></path>
+                                </svg>
                             </div>
                             <div>
                                 <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -134,7 +135,7 @@ $upcoming_appointments = get_doctor_upcoming_appointments($pdo, $doctor_id, 5);
                             <a href="appointments.php" class="block w-full text-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-blue-600 border border-transparent rounded-lg active:bg-blue-600 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue">
                                 View All Appointments
                             </a>
-                            <a href="schedule.php" class="block w-full text-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-gray-600 border border-transparent rounded-lg active:bg-gray-600 hover:bg-gray-700 focus:outline-none focus:shadow-outline-gray">
+                            <a href="availability.php" class="block w-full text-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-gray-600 border border-transparent rounded-lg active:bg-gray-600 hover:bg-gray-700 focus:outline-none focus:shadow-outline-gray">
                                 Manage Schedule & Availability
                             </a>
                         </div>

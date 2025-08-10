@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once 'includes/functions.php';
 
 $error = '';
@@ -27,10 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             } else {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['full_name'];
-                $_SESSION['role'] = $user['role'];
+                // Use the correct column name: 'user_type'
+                $_SESSION['user_type'] = $user['user_type'];
 
                 // Final, corrected redirection logic
-                $user_role = $user['role'];
+                $user_role = $user['user_type'];
 
                 if ($user_role === 'admin') {
                     header("Location: admin/index.php");

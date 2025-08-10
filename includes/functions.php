@@ -97,7 +97,7 @@ function get_logged_in_user()
  */
 function check_user_role($role)
 {
-    return is_logged_in() && isset($_SESSION['role']) && $_SESSION['role'] === $role;
+    return is_logged_in() && isset($_SESSION['user_type']) && $_SESSION['user_type'] === $role;
 }
 
 /**
@@ -421,7 +421,7 @@ function check_user_permission($required_type) {
         return false;
     }
 
-            $user_type = $_SESSION['role'] ?? '';
+            $user_type = $_SESSION['user_type'] ?? '';
 
     // الأدمن لديه جميع الصلاحيات
     if ($user_type === 'admin') {
@@ -483,7 +483,7 @@ function login_user($email, $password) {
         }
 
         // البحث عن المستخدم
-        $stmt = $conn->prepare("SELECT id, full_name, email, password, role, is_active, failed_login_attempts, last_failed_login FROM users WHERE email = ? AND is_active = 1");
+        $stmt = $conn->prepare("SELECT id, full_name, email, password, user_type, is_active, failed_login_attempts, last_failed_login FROM users WHERE email = ? AND is_active = 1");
         $stmt->execute([$email]);
         $user = $stmt->fetch();
 
@@ -517,9 +517,9 @@ function login_user($email, $password) {
         session_regenerate_id(true);
 
         $_SESSION['user_id'] = $user['id'];
-        $_SESSION['full_name'] = $user['full_name'];
+        $_SESSION['user_name'] = $user['full_name'];
         $_SESSION['email'] = $user['email'];
-        $_SESSION['role'] = $user['role'];
+        $_SESSION['user_type'] = $user['user_type'];
         $_SESSION['login_time'] = time();
         $_SESSION['ip_address'] = $_SERVER['REMOTE_ADDR'] ?? '';
         $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
@@ -1498,19 +1498,39 @@ function get_doctor_upcoming_appointments($pdo, $doctor_id, $limit = 5) {
         $today = date('Y-m-d');
         $sql = "SELECT a.*, u.full_name as patient_name, u.email as patient_email
                 FROM appointments a
-                JOIN users u ON a.patient_id = u.id
+                JOIN users u ON a.user_id = u.id
                 WHERE a.doctor_id = ?
                 AND a.appointment_date >= ?
                 AND a.status IN ('confirmed', 'pending')
                 ORDER BY a.appointment_date ASC, a.appointment_time ASC
                 LIMIT ?";
-
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$doctor_id, $today, $limit]);
-
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (Exception $e) {
         error_log('Get doctor upcoming appointments error: ' . $e->getMessage());
+        return [];
+    }
+}
+
+/**
+ * Get all of a doctor's appointments (past and future).
+ * @param PDO $pdo
+ * @param int $doctor_id
+ * @return array
+ */
+function get_all_doctor_appointments($pdo, $doctor_id) {
+    try {
+        $sql = "SELECT a.*, u.full_name as patient_name, u.email as patient_email, u.phone as patient_phone
+                FROM appointments a
+                JOIN users u ON a.user_id = u.id
+                WHERE a.doctor_id = ?
+                ORDER BY a.appointment_date DESC, a.appointment_time DESC";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$doctor_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        error_log('Get all doctor appointments error: ' . $e->getMessage());
         return [];
     }
 }

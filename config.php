@@ -11,16 +11,21 @@ define('DB_PASS', '');
 // Define the base URL of the site.
 // IMPORTANT: Make sure to change this if your site is in a subfolder.
 // Example: http://localhost/my-app/
-$protocol = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http';
-$host = $_SERVER['HTTP_HOST'];
-$script_name = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
-// Ensure script_name is not just '/' if it's in the root, otherwise append a slash.
-$base_path = rtrim($script_name, '/') . '/';
-define('BASE_URL', $protocol . '://' . $host . $base_path);
+if (php_sapi_name() !== 'cli') {
+    $protocol = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    $script_name = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+    // Ensure script_name is not just '/' if it's in the root, otherwise append a slash.
+    $base_path = rtrim($script_name, '/') . '/';
+    define('BASE_URL', $protocol . '://' . $host . $base_path);
 
-// Start the session
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
+    // Start the session only in web mode
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+} else {
+    // CLI mode
+    define('BASE_URL', 'http://localhost/');
 }
 
 // **Create Database Connection** //

@@ -1,8 +1,4 @@
 <?php
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-
 // Ensure the config file is included to have access to get_db_connection()
 require_once __DIR__ . '/../config.php';
 
@@ -15,8 +11,8 @@ if (!defined('BASE_URL')) {
     define('BASE_URL', 'http://localhost/app-demo-test/');
 }
 
-// Start session if not already started
-if (session_status() == PHP_SESSION_NONE) {
+// Start session only in web mode
+if (php_sapi_name() !== 'cli' && session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 

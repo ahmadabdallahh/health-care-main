@@ -127,7 +127,7 @@ App-Demo/
 1. **Download Project**
 
    ```bash
-   git clone [repository-url]
+   git clone https://github.com/ahmadabdallahh/health-care-main
    cd App-Demo
    ```
 
@@ -159,7 +159,7 @@ App-Demo/
    - Ensure MySQL is enabled
 
 5. **System Testing**
-   - Open browser and go to `http://localhost/App-Demo`
+   - Open browser and go to `http://localhost/app-demo-test`
    - Try registration and booking
 
 ## 📋 New Added Features
@@ -215,33 +215,6 @@ App-Demo/
 3. **Appointment Management**: Track bookings
 4. **Settings**: Configure system
 
-## 🔧 Advanced Settings
-
-### System Settings
-
-```sql
--- System settings table
-INSERT INTO system_settings (setting_key, setting_value, description) VALUES
-('appointment_reminder_hours', '24', 'Hours before appointment to send reminder'),
-('max_appointments_per_day', '50', 'Maximum daily appointments per doctor'),
-('appointment_duration_minutes', '30', 'Appointment duration in minutes'),
-('auto_confirm_appointments', 'true', 'Auto-confirm appointments'),
-('enable_notifications', 'true', 'Enable notification system');
-```
-
-### Design Customization
-
-```css
-/* Color customization */
-:root {
-  --primary-blue: #2563eb;
-  --medical-green: #10b981;
-  --warning: #f59e0b;
-  --error: #ef4444;
-  --success: #10b981;
-}
-```
-
 ## 🐛 Troubleshooting
 
 ### Common Issues
@@ -259,14 +232,6 @@ INSERT INTO system_settings (setting_key, setting_value, description) VALUES
 3. **Booking Issues**
    - Verify login status
    - Check appointment availability
-
-### Error Logs
-
-```php
-// Enable error logging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-```
 
 ## 🔒 Security
 
@@ -294,13 +259,6 @@ ini_set('display_errors', 1);
 - [ ] AI recommendations
 - [ ] Medical records system
 - [ ] Hospital system integration
-
-### Technical Improvements
-
-- [ ] Performance optimization
-- [ ] API addition
-- [ ] Security enhancement
-- [ ] Automated testing addition
 
 ## 🤝 Contributing
 

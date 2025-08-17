@@ -1,7 +1,6 @@
 <?php
 session_start();
 require_once 'config.php';
-require_once 'includes/functions.php';
 
 // Set content type to JSON
 header('Content-Type: application/json');

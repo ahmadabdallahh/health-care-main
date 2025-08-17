@@ -1460,38 +1460,43 @@ function get_public_available_slots($doctor_id, $date) {
     }
 }
 
-/**
- * Get doctor dashboard statistics
- * @param PDO $pdo
- * @param int $doctor_id
- * @return array
- */
-function get_doctor_dashboard_stats($pdo, $doctor_id) {
+// Doctor Dashboard Functions
+function get_doctor_dashboard_stats($conn, $doctor_id) {
     try {
-        // Get today's appointments count
-        $today = date('Y-m-d');
-        $today_appointments = get_doctor_appointment_count($pdo, $doctor_id, 'confirmed');
+        $stats = [];
 
-        // Get upcoming appointments count (next 7 days)
-        $upcoming_sql = "SELECT COUNT(*) FROM appointments
-                         WHERE doctor_id = ?
-                         AND appointment_date >= ?
-                         AND appointment_date <= DATE_ADD(?, INTERVAL 7 DAY)
-                         AND status IN ('confirmed', 'pending')";
-        $upcoming_stmt = $pdo->prepare($upcoming_sql);
-        $upcoming_stmt->execute([$doctor_id, $today, $today]);
-        $upcoming_appointments = $upcoming_stmt->fetchColumn();
+        // Today's appointments
+        $stmt = $conn->prepare("
+            SELECT COUNT(*) as count
+            FROM appointments
+            WHERE doctor_id = ?
+            AND DATE(appointment_time) = CURDATE()
+        ");
+        $stmt->execute([$doctor_id]);
+        $stats['today_appointments'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
 
-        // Get total unique patients count
-        $total_patients = get_doctor_patient_count($pdo, $doctor_id);
+        // Upcoming appointments
+        $stmt = $conn->prepare("
+            SELECT COUNT(*) as count
+            FROM appointments
+            WHERE doctor_id = ?
+            AND appointment_time > NOW()
+        ");
+        $stmt->execute([$doctor_id]);
+        $stats['upcoming_appointments'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
 
-        return [
-            'today_appointments' => $today_appointments,
-            'upcoming_appointments' => $upcoming_appointments,
-            'total_patients' => $total_patients
-        ];
+        // Total unique patients
+        $stmt = $conn->prepare("
+            SELECT COUNT(DISTINCT patient_id) as count
+            FROM appointments
+            WHERE doctor_id = ?
+        ");
+        $stmt->execute([$doctor_id]);
+        $stats['total_patients'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+
+        return $stats;
     } catch (Exception $e) {
-        error_log('Get doctor dashboard stats error: ' . $e->getMessage());
+        error_log("Error getting doctor stats: " . $e->getMessage());
         return [
             'today_appointments' => 0,
             'upcoming_appointments' => 0,
@@ -1500,30 +1505,66 @@ function get_doctor_dashboard_stats($pdo, $doctor_id) {
     }
 }
 
-/**
- * Get doctor's upcoming appointments
- * @param PDO $pdo
- * @param int $doctor_id
- * @param int $limit
- * @return array
- */
-
-function get_doctor_upcoming_appointments($pdo, $doctor_id, $limit = 5) {
+function get_doctor_upcoming_appointments($conn, $doctor_id, $limit = 10) {
     try {
-        $today = date('Y-m-d');
-        $sql = "SELECT a.*, u.full_name as patient_name, u.email as patient_email
-                FROM appointments a
-                JOIN users u ON a.user_id = u.id
-                WHERE a.doctor_id = ?
-                AND a.appointment_date >= ?
-                AND a.status IN ('confirmed', 'pending')
-                ORDER BY a.appointment_date ASC, a.appointment_time ASC
-                LIMIT ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$doctor_id, $today, $limit]);
+        $stmt = $conn->prepare("
+            SELECT
+                a.id,
+                a.appointment_time,
+                a.appointment_type,
+                a.status,
+                u.full_name as patient_name,
+                u.id as patient_id
+            FROM appointments a
+            LEFT JOIN users u ON a.patient_id = u.id
+            WHERE a.doctor_id = ?
+            AND a.appointment_time >= NOW()
+            AND a.status IN ('confirmed', 'pending')
+            ORDER BY a.appointment_time ASC
+            LIMIT ?
+        ");
+        $stmt->execute([$doctor_id, $limit]);
+        $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Add priority based on time and type
+        foreach ($appointments as &$appointment) {
+            $appointment['priority'] = 'medium';
+            $time_diff = strtotime($appointment['appointment_time']) - time();
+
+            if ($time_diff < 3600) { // Less than 1 hour
+                $appointment['priority'] = 'high';
+            } elseif ($time_diff > 86400) { // More than 1 day
+                $appointment['priority'] = 'low';
+            }
+        }
+
+        return $appointments;
+    } catch (Exception $e) {
+        error_log("Error getting doctor appointments: " . $e->getMessage());
+        return [];
+    }
+}
+
+function get_doctor_recent_patients($conn, $doctor_id, $limit = 5) {
+    try {
+        $stmt = $conn->prepare("
+            SELECT
+                u.id,
+                u.full_name,
+                u.profile_image,
+                MAX(a.appointment_time) as last_visit
+            FROM appointments a
+            LEFT JOIN users u ON a.patient_id = u.id
+            WHERE a.doctor_id = ?
+            AND a.status = 'completed'
+            GROUP BY u.id, u.full_name, u.profile_image
+            ORDER BY last_visit DESC
+            LIMIT ?
+        ");
+        $stmt->execute([$doctor_id, $limit]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (Exception $e) {
-        error_log('Get doctor upcoming appointments error: ' . $e->getMessage());
+        error_log("Error getting doctor recent patients: " . $e->getMessage());
         return [];
     }
 }

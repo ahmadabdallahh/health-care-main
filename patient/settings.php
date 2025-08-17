@@ -625,10 +625,16 @@ require_once '../includes/dashboard_header.php';
                         </div>
                     </div>
 
-                    <div class="setting-actions">
-                        <a href="<?php echo BASE_URL; ?>patient/profile.php" class="btn btn-primary"><i class="fas fa-user-edit"></i> تعديل الملف الشخصي</a>
-                        <a href="<?php echo BASE_URL; ?>export_data.php" class="btn btn-secondary"><i class="fas fa-download"></i> تصدير بياناتي</a>
-                        <a href="#" class="btn btn-danger" id="delete-account-btn"><i class="fas fa-trash-alt"></i> حذف الحساب</a>
+                    <div class="form-actions">
+                        <a href="<?php echo BASE_URL; ?>patient/profile.php" class="btn btn-primary">
+                            <i class="fas fa-user-edit"></i> تعديل الملف الشخصي
+                        </a>
+                        <a href="#" class="btn btn-secondary">
+                            <i class="fas fa-download"></i> تصدير بياناتي
+                        </a>
+                        <a href="#" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> حذف الحساب
+                        </a>
                     </div>
                 </div>
             </div>
@@ -712,22 +718,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 if (this.classList.contains('btn-danger')) {
                     if (confirm('هل أنت متأكد من حذف حسابك؟ هذا الإجراء لا يمكن التراجع عنه.')) {
-                        fetch('<?php echo BASE_URL; ?>delete_account.php', {
-                            method: 'POST',
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                alert('تم حذف حسابك بنجاح.');
-                                window.location.href = '<?php echo BASE_URL; ?>login.php';
-                            } else {
-                                alert('حدث خطأ أثناء حذف الحساب: ' + data.message);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('حدث خطأ فادح. يرجى المحاولة مرة أخرى.');
-                        });
+                        alert('سيتم تنفيذ حذف الحساب قريباً');
                     }
                 } else {
                     alert('هذه الميزة ستكون متاحة قريباً');

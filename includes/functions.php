@@ -895,7 +895,8 @@ function get_status_badge_class($status) {
 // ====================================================================
 
 // Function to search for doctors
-function search_doctors($search_query, $specialty_id) {
+function search_doctors($search_query, $specialty_id)
+{
     global $conn;
     if (!$conn) {
         return []; // Return empty array if connection is not available

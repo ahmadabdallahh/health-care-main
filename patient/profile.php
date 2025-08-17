@@ -1,0 +1,602 @@
+<?php
+session_start();
+require_once '../config.php';
+require_once '../includes/functions.php';
+
+// Ensure user is logged in as a patient
+if (!is_logged_in() || ($_SESSION['role'] !== 'patient' && $_SESSION['user_type'] !== 'patient')) {
+    header('Location: ' . BASE_URL . 'login.php');
+    exit();
+}
+
+$user = get_logged_in_user();
+$pageTitle = 'الملف الشخصي';
+$page_title = $pageTitle;
+
+$user_id = $_SESSION['user_id'];
+$success_message = '';
+$error_message = '';
+
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $full_name = clean_input($_POST['full_name']);
+    $email = clean_input($_POST['email']);
+    $phone = clean_input($_POST['phone']);
+    $date_of_birth = clean_input($_POST['date_of_birth']);
+    $gender = clean_input($_POST['gender']);
+    $address = clean_input($_POST['address']);
+
+    // Validate required fields
+    if (empty($full_name) || empty($email)) {
+        $error_message = 'يرجى ملء جميع الحقول المطلوبة';
+    } else {
+        try {
+            // Check if email already exists for another user
+            $stmt = $conn->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
+            $stmt->execute([$email, $user_id]);
+            if ($stmt->fetch()) {
+                $error_message = 'البريد الإلكتروني مستخدم بالفعل';
+            } else {
+                // Update user profile
+                $stmt = $conn->prepare("
+                    UPDATE users SET
+                    full_name = ?,
+                    email = ?,
+                    phone = ?,
+                    date_of_birth = ?,
+                    gender = ?,
+                    address = ?,
+                    updated_at = NOW()
+                    WHERE id = ?
+                ");
+                $stmt->execute([$full_name, $email, $phone, $date_of_birth, $gender, $address, $user_id]);
+
+                $success_message = 'تم تحديث الملف الشخصي بنجاح';
+
+                // Update session
+                $_SESSION['user_name'] = $full_name;
+
+                // Refresh user data
+                $user = get_logged_in_user();
+            }
+        } catch (Exception $e) {
+            error_log("Error updating profile: " . $e->getMessage());
+            $error_message = 'حدث خطأ أثناء تحديث الملف الشخصي';
+        }
+    }
+}
+
+require_once '../includes/dashboard_header.php';
+?>
+
+<style>
+/* Profile Page Styles */
+.profile-page {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.profile-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 30px;
+    min-height: calc(100vh - 40px);
+}
+
+.enhanced-sidebar {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+    position: sticky;
+    top: 20px;
+}
+
+.sidebar-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.sidebar-header h3 {
+    color: #4a5568;
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.sidebar-nav {
+    margin-bottom: 30px;
+}
+
+.nav-item {
+    margin-bottom: 8px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    color: #4a5568;
+    text-decoration: none;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.nav-link:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    transform: translateX(-5px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.nav-link.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.nav-link i {
+    margin-left: 15px;
+    font-size: 18px;
+    width: 20px;
+    text-align: center;
+}
+
+.nav-link span {
+    flex: 1;
+}
+
+.main-content {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    color: white;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.page-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin: 0;
+}
+
+.profile-form {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.form-section {
+    margin-bottom: 30px;
+}
+
+.form-section h3 {
+    color: #2d3748;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    color: #4a5568;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f7fafc;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid #e2e8f0;
+}
+
+.btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.btn-secondary {
+    background: #e2e8f0;
+    color: #4a5568;
+}
+
+.btn-secondary:hover {
+    background: #cbd5e0;
+}
+
+.alert {
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.alert-success {
+    background: #c6f6d5;
+    color: #22543d;
+    border: 1px solid #9ae6b4;
+}
+
+.alert-error {
+    background: #fed7d7;
+    color: #742a2a;
+    border: 1px solid #feb2b2;
+}
+
+.profile-avatar {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.avatar-container {
+    position: relative;
+    display: inline-block;
+}
+
+.avatar-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #667eea;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.avatar-upload {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #667eea;
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.avatar-upload:hover {
+    background: #5a67d8;
+    transform: scale(1.1);
+}
+
+@media (max-width: 1024px) {
+    .profile-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .enhanced-sidebar {
+        position: static;
+        order: 2;
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-page {
+        padding: 10px;
+    }
+
+    .main-content {
+        padding: 20px;
+    }
+
+    .profile-form {
+        padding: 20px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+}
+</style>
+
+<div class="profile-page">
+    <div class="profile-container">
+        <!-- Enhanced Sidebar -->
+        <div class="enhanced-sidebar">
+            <div class="sidebar-header">
+                <h3>شفاء</h3>
+                <p style="color: #718096; margin: 10px 0 0 0; font-size: 0.9rem;">نظام الحجوزات الطبية</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-item">
+                    <a href="<?php echo BASE_URL; ?>patient/index.php" class="nav-link">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>لوحة التحكم</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="<?php echo BASE_URL; ?>patient/appointments.php" class="nav-link">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>مواعيدي</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="<?php echo BASE_URL; ?>patient/medical_records.php" class="nav-link">
+                        <i class="fas fa-file-medical"></i>
+                        <span>سجلاتي الطبية</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="<?php echo BASE_URL; ?>patient/profile.php" class="nav-link active">
+                        <i class="fas fa-user-edit"></i>
+                        <span>تعديل الملف الشخصي</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="<?php echo BASE_URL; ?>#doctors" class="nav-link">
+                        <i class="fas fa-search"></i>
+                        <span>حجز موعد جديد</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="nav-item">
+                    <a href="<?php echo BASE_URL; ?>patient/settings.php" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        <span>الإعدادات</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="<?php echo BASE_URL; ?>logout.php" class="nav-link" style="color: #e53e3e;">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>تسجيل الخروج</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1>الملف الشخصي</h1>
+                <p>تعديل معلوماتك الشخصية</p>
+            </div>
+
+            <!-- Profile Form -->
+            <div class="profile-form">
+                <?php if ($success_message): ?>
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($success_message); ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($error_message): ?>
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-circle"></i> <?php echo htmlspecialchars($error_message); ?>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Profile Avatar -->
+                <div class="profile-avatar">
+                    <div class="avatar-container">
+                        <img src="<?php echo htmlspecialchars($user['profile_image'] ?? 'assets/images/default-avatar.png'); ?>"
+                             alt="صورة الملف الشخصي"
+                             class="avatar-image">
+                        <div class="avatar-upload">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="POST" action="">
+                    <!-- Personal Information -->
+                    <div class="form-section">
+                        <h3>المعلومات الشخصية</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="full_name">الاسم الكامل *</label>
+                                <input type="text" id="full_name" name="full_name"
+                                       value="<?php echo htmlspecialchars($user['full_name'] ?? ''); ?>"
+                                       required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">البريد الإلكتروني *</label>
+                                <input type="email" id="email" name="email"
+                                       value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>"
+                                       required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone">رقم الهاتف</label>
+                                <input type="tel" id="phone" name="phone"
+                                       value="<?php echo htmlspecialchars($user['phone'] ?? ''); ?>">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="date_of_birth">تاريخ الميلاد</label>
+                                <input type="date" id="date_of_birth" name="date_of_birth"
+                                       value="<?php echo htmlspecialchars($user['date_of_birth'] ?? ''); ?>">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="gender">الجنس</label>
+                                <select id="gender" name="gender">
+                                    <option value="">اختر الجنس</option>
+                                    <option value="male" <?php echo ($user['gender'] ?? '') === 'male' ? 'selected' : ''; ?>>ذكر</option>
+                                    <option value="female" <?php echo ($user['gender'] ?? '') === 'female' ? 'selected' : ''; ?>>أنثى</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address Information -->
+                    <div class="form-section">
+                        <h3>معلومات العنوان</h3>
+                        <div class="form-group">
+                            <label for="address">العنوان</label>
+                            <textarea id="address" name="address" placeholder="أدخل عنوانك الكامل"><?php echo htmlspecialchars($user['address'] ?? ''); ?></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> حفظ التغييرات
+                        </button>
+                        <a href="<?php echo BASE_URL; ?>patient/index.php" class="btn btn-secondary">
+                            <i class="fas fa-arrow-right"></i> العودة للوحة التحكم
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Avatar upload functionality
+    const avatarUpload = document.querySelector('.avatar-upload');
+    const avatarImage = document.querySelector('.avatar-image');
+
+    if (avatarUpload) {
+        avatarUpload.addEventListener('click', function() {
+            // Create file input
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // Here you would typically upload the file to server
+                    // For now, we'll just show a preview
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        avatarImage.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            fileInput.click();
+        });
+    }
+
+    // Form validation
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.style.borderColor = '#e53e3e';
+                    isValid = false;
+                } else {
+                    field.style.borderColor = '#e2e8f0';
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                alert('يرجى ملء جميع الحقول المطلوبة');
+            }
+        });
+    }
+});
+</script>
+
+<?php
+require_once '../includes/dashboard_footer.php';
+?>

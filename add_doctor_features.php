@@ -1,5 +1,13 @@
 <?php
+session_start();
 require_once 'config.php';
+require_once 'includes/functions.php';
+
+// Ensure user is logged in as an admin
+if (!is_logged_in() || $_SESSION['role'] !== 'admin') {
+    http_response_code(403);
+    die('<h2>Access Denied</h2><p>You do not have permission to access this page.</p>');
+}
 
 echo "<h2>Adding Doctor Dashboard Features</h2>";
 

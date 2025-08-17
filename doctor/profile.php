@@ -662,25 +662,25 @@ require_once '../includes/dashboard_header.php';
             <div class="notification-item">
                 <div class="notification-time">منذ ساعة</div>
                 <div class="notification-text">تم تحديث السجل الطبي للمريض أحمد محمد</div>
-            </div>
+        </div>
 
             <!-- Quick Actions -->
             <div style="margin-top: 30px;">
                 <h4 style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 15px;">إجراءات سريعة</h4>
                 <div style="display: grid; gap: 10px;">
-                    <button class="btn-action btn-start" style="width: 100%;">
+                    <a href="quick-actions.php" class="btn-action btn-start" style="width: 100%; text-decoration: none; display: flex; align-items: center; justify-content: center;">
                         <i class="fas fa-plus"></i> إضافة موعد جديد
-                    </button>
-                    <button class="btn-action btn-reschedule" style="width: 100%;">
+                    </a>
+                    <a href="quick-actions.php" class="btn-action btn-reschedule" style="width: 100%; text-decoration: none; display: flex; align-items: center; justify-content: center;">
                         <i class="fas fa-file-medical"></i> عرض السجلات الطبية
-                    </button>
-                    <button class="btn-action" style="width: 100%; background: var(--primary-color); color: white;">
+                    </a>
+                    <a href="quick-actions.php" class="btn-action" style="width: 100%; background: var(--primary-color); color: white; text-decoration: none; display: flex; align-items: center; justify-content: center;">
                         <i class="fas fa-cog"></i> إعدادات الحساب
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
-    </div>
+        </div>
 </div>
 
 <script>

@@ -14,7 +14,7 @@ if (!isset($_GET['doctor_id']) || empty($_GET['doctor_id'])) {
 }
 $doctor_id = $_GET['doctor_id'];
 
-$stmt = $conn->prepare("SELECT u.username AS doctor_name FROM doctors d JOIN users u ON d.user_id = u.id WHERE d.id = ?");
+$stmt = $conn->prepare("SELECT u.full_name FROM doctors d JOIN users u ON d.user_id = u.id WHERE d.id = ?");
 $stmt->execute([$doctor_id]);
 $doctor = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -28,7 +28,7 @@ if (!$doctor) {
 $clinics_stmt = $conn->query("SELECT id, name FROM clinics ORDER BY name");
 $clinics = $clinics_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$pageTitle = 'حجز موعد مع ' . htmlspecialchars($doctor['doctor_name']);
+$pageTitle = 'حجز موعد مع ' . htmlspecialchars($doctor['full_name']);
 ?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">

@@ -109,8 +109,8 @@ require_once '../includes/dashboard_header.php';
 
 .nav-link.active {
     /* background: var(--gradient-primary); */
-    background: #dcdcdc ip !important;
-    color: black;
+    background: #dcdcdc !important;
+    color: black !important;
     box-shadow: 0 10px 20px var(--shadow-primary);
 }
 

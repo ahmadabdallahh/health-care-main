@@ -24,7 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $phone = clean_input($_POST['phone']);
     $date_of_birth = clean_input($_POST['date_of_birth']);
     $gender = clean_input($_POST['gender']);
-    $address = clean_input($_POST['address']);
+    $insurance_provider = clean_input($_POST['insurance_provider'] ?? '');
+    $insurance_number = clean_input($_POST['insurance_number'] ?? '');
 
     // Validate required fields
     if (empty($full_name) || empty($email)) {
@@ -37,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($stmt->fetch()) {
                 $error_message = 'البريد الإلكتروني مستخدم بالفعل';
             } else {
-                // Update user profile
+                // Update user profile - only update fields that exist in the database
                 $stmt = $conn->prepare("
                     UPDATE users SET
                     full_name = ?,
@@ -45,11 +46,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     phone = ?,
                     date_of_birth = ?,
                     gender = ?,
-                    address = ?,
+                    insurance_provider = ?,
+                    insurance_number = ?,
                     updated_at = NOW()
                     WHERE id = ?
                 ");
-                $stmt->execute([$full_name, $email, $phone, $date_of_birth, $gender, $address, $user_id]);
+                $stmt->execute([$full_name, $email, $phone, $date_of_birth, $gender, $insurance_provider, $insurance_number, $user_id]);
 
                 $success_message = 'تم تحديث الملف الشخصي بنجاح';
 
@@ -61,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         } catch (Exception $e) {
             error_log("Error updating profile: " . $e->getMessage());
-            $error_message = 'حدث خطأ أثناء تحديث الملف الشخصي';
+            $error_message = 'حدث خطأ أثناء تحديث الملف الشخصي: ' . $e->getMessage();
         }
     }
 }
@@ -469,17 +471,21 @@ require_once '../includes/dashboard_header.php';
                     </div>
                 <?php endif; ?>
 
-                <!-- Profile Avatar -->
-                <div class="profile-avatar">
-                    <div class="avatar-container">
-                        <img src="<?php echo htmlspecialchars($user['profile_image'] ?? 'assets/images/default-avatar.png'); ?>"
-                             alt="صورة الملف الشخصي"
-                             class="avatar-image">
-                        <div class="avatar-upload">
-                            <i class="fas fa-camera"></i>
-                        </div>
-                    </div>
-                </div>
+                                 <!-- Profile Avatar -->
+                 <div class="profile-avatar">
+                     <div class="avatar-container">
+                         <img src="<?php echo htmlspecialchars($user['profile_image'] ?? 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiByeD0iNjAiIGZpbGw9IiNFNUU3RUIiLz4KPHN2ZyB4PSIzMCIgeT0iMjAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjOEE5M0E2Ij4KPHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6bTAgM2MyLjY3IDAgNC44MyAyLjE2IDQuODMgNC44M1MxNC42NyAxNC42NiAxMiAxNC42NiA3LjE3IDEyLjUgNy4xNyA5LjgzIDkuMzMgNS4xNyAxMiA1LjE3em0wIDEyYzQuNDIgMCA4LjE3LTIuMTYgOC4xNy00Ljgzcy0zLjc1LTQuODMtOC4xNy00LjgzLTguMTcgMi4xNi04LjE3IDQuODNTNy41OCAyMC4xNyAxMiAyMC4xN3oiLz4KPC9zdmc+Cjwvc3ZnPgo='); ?>"
+                              alt="صورة الملف الشخصي"
+                              class="avatar-image"
+                              id="profile-image"
+                              onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiByeD0iNjAiIGZpbGw9IiNFNUU3RUIiLz4KPHN2ZyB4PSIzMCIgeT0iMjAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjOEE5M0E2Ij4KPHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6bTAgM2MyLjY3IDAgNC44MyAyLjE2IDQuODMgNC44M1MxNC42NyAxNC42NiAxMiAxNC42NiA3LjE3IDEyLjUgNy4xNyA5LjgzIDkuMzMgNS4xNyAxMiA1LjE3em0wIDEyYzQuNDIgMCA4LjE3LTIuMTYgOC4xNy00Ljgzcy0zLjc1LTQuODMtOC4xNy00LjgzLTguMTcgMi4xNi04LjE3IDQuODNTNy41OCAyMC4xNyAxMiAyMC4xN3oiLz4KPC9zdmc+Cjwvc3ZnPgo=';">
+                         <div class="avatar-upload" id="avatar-upload">
+                             <i class="fas fa-camera"></i>
+                         </div>
+                         <input type="file" id="profile-picture-input" accept="image/*" style="display: none;">
+                     </div>
+                     <p class="text-sm text-gray-600 mt-2">انقر على الكاميرا لتغيير الصورة الشخصية</p>
+                 </div>
 
                 <form method="POST" action="">
                     <!-- Personal Information -->
@@ -523,14 +529,22 @@ require_once '../includes/dashboard_header.php';
                         </div>
                     </div>
 
-                    <!-- Address Information -->
-                    <div class="form-section">
-                        <h3>معلومات العنوان</h3>
-                        <div class="form-group">
-                            <label for="address">العنوان</label>
-                            <textarea id="address" name="address" placeholder="أدخل عنوانك الكامل"><?php echo htmlspecialchars($user['address'] ?? ''); ?></textarea>
-                        </div>
-                    </div>
+                                         <!-- Additional Information -->
+                     <div class="form-section">
+                         <h3>معلومات إضافية</h3>
+                         <div class="form-group">
+                             <label for="insurance_provider">شركة التأمين (اختياري)</label>
+                             <input type="text" id="insurance_provider" name="insurance_provider"
+                                    value="<?php echo htmlspecialchars($user['insurance_provider'] ?? ''); ?>"
+                                    placeholder="أدخل اسم شركة التأمين">
+                         </div>
+                         <div class="form-group">
+                             <label for="insurance_number">رقم التأمين (اختياري)</label>
+                             <input type="text" id="insurance_number" name="insurance_number"
+                                    value="<?php echo htmlspecialchars($user['insurance_number'] ?? ''); ?>"
+                                    placeholder="أدخل رقم التأمين">
+                         </div>
+                     </div>
 
                     <!-- Form Actions -->
                     <div class="form-actions">
@@ -550,30 +564,56 @@ require_once '../includes/dashboard_header.php';
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Avatar upload functionality
-    const avatarUpload = document.querySelector('.avatar-upload');
-    const avatarImage = document.querySelector('.avatar-image');
+    const avatarUpload = document.getElementById('avatar-upload');
+    const avatarImage = document.getElementById('profile-image');
+    const fileInput = document.getElementById('profile-picture-input');
 
-    if (avatarUpload) {
+    if (avatarUpload && fileInput) {
         avatarUpload.addEventListener('click', function() {
-            // Create file input
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.accept = 'image/*';
-
-            fileInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    // Here you would typically upload the file to server
-                    // For now, we'll just show a preview
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        avatarImage.src = e.target.result;
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-
             fileInput.click();
+        });
+
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Show loading state
+                avatarUpload.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                // Create FormData for upload
+                const formData = new FormData();
+                formData.append('profile_picture', file);
+
+                                // Upload file to server
+                fetch('<?php echo BASE_URL; ?>upload_profile_picture.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Update image source
+                        avatarImage.src = data.image_url + '?t=' + new Date().getTime();
+
+                        // Show success message
+                        showAlert('تم تحديث الصورة الشخصية بنجاح', 'success');
+                    } else {
+                        showAlert('خطأ في تحديث الصورة: ' + (data.message || 'خطأ غير معروف'), 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('حدث خطأ أثناء رفع الصورة: ' + error.message, 'error');
+                })
+                .finally(() => {
+                    // Reset upload button
+                    avatarUpload.innerHTML = '<i class="fas fa-camera"></i>';
+                });
+            }
         });
     }
 
@@ -595,9 +635,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (!isValid) {
                 e.preventDefault();
-                alert('يرجى ملء جميع الحقول المطلوبة');
+                showAlert('يرجى ملء جميع الحقول المطلوبة', 'error');
             }
         });
+    }
+
+    // Alert function
+    function showAlert(message, type) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'error'}`;
+        alertDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+
+        // Insert at the top of the form
+        const form = document.querySelector('.profile-form');
+        form.insertBefore(alertDiv, form.firstChild);
+
+        // Remove after 5 seconds
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
     }
 });
 </script>

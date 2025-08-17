@@ -115,7 +115,7 @@ $specialties = get_all_specialties();
             <div class="flex items-center justify-between h-20">
                 <!-- Logo -->
                 <a href="#" class="text-3xl font-black text-blue-600 hover:text-blue-700 transition-colors duration-300 flex items-center space-x-2 space-x-reverse">
-                    <i class="fas fa-heartbeat text-red-500"></i>
+                    <i class="fas fa-heartbeat text-blue-600"></i>
                     <span>شفاء</span>
                 </a>
 

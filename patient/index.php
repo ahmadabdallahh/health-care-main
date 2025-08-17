@@ -40,10 +40,13 @@ try {
 require_once '../includes/dashboard_header.php';
 ?>
 
+<!-- Include the color scheme CSS -->
+<link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/color-scheme.php">
+
 <style>
 /* Enhanced Patient Dashboard Styles */
 .patient-dashboard {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* background: var(--gradient-primary); */
     min-height: 100vh;
     padding: 20px;
 }
@@ -59,11 +62,11 @@ require_once '../includes/dashboard_header.php';
 
 /* Enhanced Sidebar */
 .enhanced-sidebar {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--glass-bg);
     backdrop-filter: blur(10px);
     border-radius: 20px;
     padding: 30px 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--glass-shadow);
     height: fit-content;
     position: sticky;
     top: 20px;
@@ -77,7 +80,7 @@ require_once '../includes/dashboard_header.php';
 }
 
 .sidebar-header h3 {
-    color: #4a5568;
+    color: var(--text-secondary);
     font-size: 24px;
     font-weight: 700;
     margin: 0;
@@ -95,7 +98,7 @@ require_once '../includes/dashboard_header.php';
     display: flex;
     align-items: center;
     padding: 15px 20px;
-    color: #4a5568;
+    color: var(--text-secondary);
     text-decoration: none;
     border-radius: 12px;
     transition: all 0.3s ease;
@@ -105,16 +108,16 @@ require_once '../includes/dashboard_header.php';
 }
 
 .nav-link:hover {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: #dcdcdc;
+    color: black;
     transform: translateX(-5px);
-    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 10px 20px var(--shadow-primary);
 }
 
 .nav-link.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    background:#dcdcdc !important;
+    color: black !important;
+    box-shadow: 0 10px 20px var(--shadow-primary);
 }
 
 .nav-link i {
@@ -130,20 +133,22 @@ require_once '../includes/dashboard_header.php';
 
 /* Main Content Area */
 .main-content {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--glass-bg);
     backdrop-filter: blur(10px);
     border-radius: 20px;
     padding: 40px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--glass-shadow);
 }
 
 .welcome-section {
     text-align: center;
     margin-bottom: 40px;
     padding: 30px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #fefefe;
     border-radius: 20px;
     color: white;
+    box-shadow: 0 10px 20px var(--shadow-primary);
+    border: 2px solid #dcdcdc;
 }
 
 .welcome-section h1 {
@@ -168,10 +173,10 @@ require_once '../includes/dashboard_header.php';
 }
 
 .stat-card {
-    background: white;
+    background: var(--bg-primary);
     padding: 30px;
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px var(--shadow-medium);
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
@@ -184,12 +189,12 @@ require_once '../includes/dashboard_header.php';
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #dcdcdc;
 }
 
 .stat-card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 20px 40px var(--shadow-dark);
 }
 
 .stat-header {
@@ -211,41 +216,41 @@ require_once '../includes/dashboard_header.php';
 }
 
 .stat-icon.upcoming {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--gradient-primary);
 }
 
 .stat-icon.completed {
-    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    background: var(--gradient-success);
 }
 
 .stat-icon.total {
-    background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+    background: var(--gradient-warning);
 }
 
 .stat-info h3 {
     font-size: 2.5rem;
     font-weight: 700;
     margin: 0;
-    color: #2d3748;
+    color: var(--text-primary);
 }
 
 .stat-info p {
-    color: #718096;
+    color: var(--text-muted);
     margin: 5px 0 0 0;
     font-weight: 600;
 }
 
 /* Quick Actions */
 .quick-actions {
-    background: white;
+    background: var(--bg-primary);
     padding: 30px;
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px var(--shadow-medium);
     margin-bottom: 40px;
 }
 
 .quick-actions h3 {
-    color: #2d3748;
+    color: var(--text-primary);
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 25px;
@@ -263,21 +268,22 @@ require_once '../includes/dashboard_header.php';
     flex-direction: column;
     align-items: center;
     padding: 25px 20px;
-    background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-    border: 2px solid #e2e8f0;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+    border: 2px solid var(--border-light);
     border-radius: 15px;
     text-decoration: none;
-    color: #4a5568;
+    color: var(--text-secondary);
     transition: all 0.3s ease;
     text-align: center;
 }
 
 .action-btn:hover {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: #dcdcdc;
+    color: black;
     transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 15px 30px var(--shadow-primary);
     border-color: transparent;
+
 }
 
 .action-btn i {
@@ -292,14 +298,14 @@ require_once '../includes/dashboard_header.php';
 
 /* Recent Appointments */
 .recent-appointments {
-    background: white;
+    background: var(--bg-primary);
     padding: 30px;
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px var(--shadow-medium);
 }
 
 .recent-appointments h3 {
-    color: #2d3748;
+    color: var(--text-primary);
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 25px;
@@ -310,15 +316,15 @@ require_once '../includes/dashboard_header.php';
     display: flex;
     align-items: center;
     padding: 20px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-light);
     border-radius: 12px;
     margin-bottom: 15px;
     transition: all 0.3s ease;
 }
 
 .appointment-item:hover {
-    border-color: #667eea;
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+    border-color: var(--primary-color);
+    box-shadow: 0 5px 15px var(--shadow-primary);
 }
 
 .appointment-icon {
@@ -331,7 +337,7 @@ require_once '../includes/dashboard_header.php';
     margin-left: 15px;
     font-size: 20px;
     color: white;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--gradient-primary);
 }
 
 .appointment-info {
@@ -339,13 +345,13 @@ require_once '../includes/dashboard_header.php';
 }
 
 .appointment-info h4 {
-    color: #2d3748;
+    color: var(--text-primary);
     font-weight: 600;
     margin: 0 0 5px 0;
 }
 
 .appointment-info p {
-    color: #718096;
+    color: var(--text-muted);
     margin: 0;
     font-size: 0.9rem;
 }
@@ -359,18 +365,18 @@ require_once '../includes/dashboard_header.php';
 }
 
 .status-confirmed {
-    background: #c6f6d5;
-    color: #22543d;
+    background: var(--status-confirmed-bg);
+    color: var(--status-confirmed-text);
 }
 
 .status-completed {
-    background: #bee3f8;
-    color: #2a4365;
+    background: var(--status-completed-bg);
+    color: var(--status-completed-text);
 }
 
 .status-cancelled {
-    background: #fed7d7;
-    color: #742a2a;
+    background: var(--status-cancelled-bg);
+    color: var(--status-cancelled-text);
 }
 
 /* Responsive Design */
@@ -422,7 +428,7 @@ require_once '../includes/dashboard_header.php';
     width: 20px;
     height: 20px;
     margin: -10px 0 0 -10px;
-    border: 2px solid #667eea;
+    border: 2px solid var(--primary-color);
     border-top: 2px solid transparent;
     border-radius: 50%;
     animation: spin 1s linear infinite;
@@ -435,13 +441,13 @@ require_once '../includes/dashboard_header.php';
 </style>
 
 <div class="patient-dashboard">
-    <div class="dashboard-container">
+<div class="dashboard-container">
         <!-- Enhanced Sidebar -->
         <div class="enhanced-sidebar">
             <div class="sidebar-header">
                 <h3>شفاء</h3>
-                <p style="color: #718096; margin: 10px 0 0 0; font-size: 0.9rem;">نظام الحجوزات الطبية</p>
-            </div>
+                <p style="color: var(--text-muted); margin: 10px 0 0 0; font-size: 0.9rem;">نظام الحجوزات الطبية</p>
+        </div>
 
             <nav class="sidebar-nav">
                 <div class="nav-item">
@@ -473,7 +479,7 @@ require_once '../includes/dashboard_header.php';
                         <i class="fas fa-search"></i>
                         <span>حجز موعد جديد</span>
                     </a>
-                </div>
+            </div>
             </nav>
 
             <div class="sidebar-footer">
@@ -484,7 +490,7 @@ require_once '../includes/dashboard_header.php';
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="<?php echo BASE_URL; ?>logout.php" class="nav-link" style="color: #e53e3e;">
+                    <a href="<?php echo BASE_URL; ?>logout.php" class="nav-link" style="color: var(--danger-color);">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>تسجيل الخروج</span>
                     </a>

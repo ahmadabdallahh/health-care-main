@@ -36,10 +36,13 @@ try {
 require_once '../includes/dashboard_header.php';
 ?>
 
+<!-- Include the color scheme CSS -->
+<link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/color-scheme.php">
+
 <style>
 /* Medical Records Page Styles */
 .medical-records-page {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #fefefe !important;
     min-height: 100vh;
     padding: 20px;
 }
@@ -54,11 +57,11 @@ require_once '../includes/dashboard_header.php';
 }
 
 .enhanced-sidebar {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--glass-bg);
     backdrop-filter: blur(10px);
     border-radius: 20px;
     padding: 30px 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--glass-shadow);
     height: fit-content;
     position: sticky;
     top: 20px;
@@ -72,7 +75,7 @@ require_once '../includes/dashboard_header.php';
 }
 
 .sidebar-header h3 {
-    color: #4a5568;
+    color: var(--text-secondary);
     font-size: 24px;
     font-weight: 700;
     margin: 0;
@@ -90,7 +93,7 @@ require_once '../includes/dashboard_header.php';
     display: flex;
     align-items: center;
     padding: 15px 20px;
-    color: #4a5568;
+    color: var(--text-secondary);
     text-decoration: none;
     border-radius: 12px;
     transition: all 0.3s ease;
@@ -98,16 +101,16 @@ require_once '../includes/dashboard_header.php';
 }
 
 .nav-link:hover {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: #dcdcdc !important;
+    color: black !important;
     transform: translateX(-5px);
-    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 10px 20px var(--shadow-primary);
 }
 
 .nav-link.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    background: #dcdcdc !important;
+    color: black !important;
+    box-shadow: 0 10px 20px var(--shadow-primary);
 }
 
 .nav-link i {
@@ -122,20 +125,21 @@ require_once '../includes/dashboard_header.php';
 }
 
 .main-content {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--glass-bg);
     backdrop-filter: blur(10px);
     border-radius: 20px;
     padding: 40px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--glass-shadow);
 }
 
 .page-header {
     text-align: center;
     margin-bottom: 40px;
     padding: 30px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #fefefe !important;
+    color: black !important;
+    border: 2px solid #dcdcdc;
     border-radius: 20px;
-    color: white;
 }
 
 .page-header h1 {
@@ -268,7 +272,7 @@ require_once '../includes/dashboard_header.php';
 }
 
 .action-btn {
-    padding: 10px 20px;
+    padding: 15px 25px;
     border: none;
     border-radius: 10px;
     font-weight: 600;
@@ -279,6 +283,8 @@ require_once '../includes/dashboard_header.php';
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    background: #dcdcdc !important;
+    color: black !important;
 }
 
 .btn-primary {

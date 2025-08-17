@@ -69,10 +69,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 require_once '../includes/dashboard_header.php';
 ?>
 
+<!-- Include the color scheme CSS -->
+<link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/color-scheme.php">
+
 <style>
 /* Profile Page Styles */
 .profile-page {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* background: var(--gradient-primary); */
     min-height: 100vh;
     padding: 20px;
 }
@@ -87,11 +90,11 @@ require_once '../includes/dashboard_header.php';
 }
 
 .enhanced-sidebar {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--glass-bg);
     backdrop-filter: blur(10px);
     border-radius: 20px;
     padding: 30px 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--glass-shadow);
     height: fit-content;
     position: sticky;
     top: 20px;
@@ -105,7 +108,7 @@ require_once '../includes/dashboard_header.php';
 }
 
 .sidebar-header h3 {
-    color: #4a5568;
+    color: var(--text-secondary);
     font-size: 24px;
     font-weight: 700;
     margin: 0;
@@ -123,7 +126,7 @@ require_once '../includes/dashboard_header.php';
     display: flex;
     align-items: center;
     padding: 15px 20px;
-    color: #4a5568;
+    color: var(--text-secondary);
     text-decoration: none;
     border-radius: 12px;
     transition: all 0.3s ease;
@@ -131,16 +134,17 @@ require_once '../includes/dashboard_header.php';
 }
 
 .nav-link:hover {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background:#f1f1f1 !important;
+    color: black !important;
     transform: translateX(-5px);
-    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 10px 20px var(--shadow-primary);
 }
 
 .nav-link.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    /* background: var(--gradient-primary); */
+    background: #dcdcdc !important;
+    color: black !important;
+    box-shadow: 0 10px 20px var(--shadow-primary);
 }
 
 .nav-link i {
@@ -155,20 +159,21 @@ require_once '../includes/dashboard_header.php';
 }
 
 .main-content {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--glass-bg);
     backdrop-filter: blur(10px);
     border-radius: 20px;
     padding: 40px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--glass-shadow);
 }
 
 .page-header {
     text-align: center;
     margin-bottom: 40px;
     padding: 30px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #fefefe !important;
+    border: 2px solid #dcdcdc;
     border-radius: 20px;
-    color: white;
+    color: black;
 }
 
 .page-header h1 {
@@ -196,12 +201,12 @@ require_once '../includes/dashboard_header.php';
 }
 
 .form-section h3 {
-    color: #2d3748;
+    color: var(--text-primary);
     font-size: 1.3rem;
     font-weight: 700;
     margin-bottom: 20px;
     padding-bottom: 10px;
-    border-bottom: 2px solid #e2e8f0;
+    border-bottom: 2px solid var(--border-light);
 }
 
 .form-grid {
@@ -216,7 +221,7 @@ require_once '../includes/dashboard_header.php';
 
 .form-group label {
     display: block;
-    color: #4a5568;
+    color: var(--text-secondary);
     font-weight: 600;
     margin-bottom: 8px;
     font-size: 0.95rem;
@@ -227,20 +232,20 @@ require_once '../includes/dashboard_header.php';
 .form-group textarea {
     width: 100%;
     padding: 12px 16px;
-    border: 2px solid #e2e8f0;
+    border: 2px solid var(--border-light);
     border-radius: 12px;
     font-size: 1rem;
     transition: all 0.3s ease;
-    background: #f7fafc;
+    background: var(--bg-secondary);
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #667eea;
-    background: white;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: var(--primary-color);
+    background: var(--bg-primary);
+    box-shadow: 0 0 0 3px var(--shadow-primary);
 }
 
 .form-group textarea {
@@ -254,7 +259,7 @@ require_once '../includes/dashboard_header.php';
     justify-content: center;
     margin-top: 30px;
     padding-top: 30px;
-    border-top: 2px solid #e2e8f0;
+    border-top: 2px solid var(--border-light);
 }
 
 .btn {
@@ -272,22 +277,22 @@ require_once '../includes/dashboard_header.php';
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--gradient-primary);
     color: white;
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 10px 20px var(--shadow-primary);
 }
 
 .btn-secondary {
-    background: #e2e8f0;
-    color: #4a5568;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
 }
 
 .btn-secondary:hover {
-    background: #cbd5e0;
+    background: var(--border-medium);
 }
 
 .alert {
@@ -298,15 +303,15 @@ require_once '../includes/dashboard_header.php';
 }
 
 .alert-success {
-    background: #c6f6d5;
-    color: #22543d;
-    border: 1px solid #9ae6b4;
+    background: var(--status-completed-bg);
+    color: var(--status-completed-text);
+    border: 1px solid var(--success-color);
 }
 
 .alert-error {
-    background: #fed7d7;
-    color: #742a2a;
-    border: 1px solid #feb2b2;
+    background: var(--status-cancelled-bg);
+    color: var(--status-cancelled-text);
+    border: 1px solid var(--danger-color);
 }
 
 .profile-avatar {
@@ -324,15 +329,15 @@ require_once '../includes/dashboard_header.php';
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
-    border: 4px solid #667eea;
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    border: 4px solid var(--primary-color);
+    box-shadow: 0 10px 30px var(--shadow-primary);
 }
 
 .avatar-upload {
     position: absolute;
     bottom: 0;
     right: 0;
-    background: #667eea;
+    background: var(--primary-color);
     color: white;
     width: 35px;
     height: 35px;
@@ -345,7 +350,7 @@ require_once '../includes/dashboard_header.php';
 }
 
 .avatar-upload:hover {
-    background: #5a67d8;
+    background: var(--primary-dark);
     transform: scale(1.1);
 }
 
@@ -390,7 +395,7 @@ require_once '../includes/dashboard_header.php';
         <div class="enhanced-sidebar">
             <div class="sidebar-header">
                 <h3>شفاء</h3>
-                <p style="color: #718096; margin: 10px 0 0 0; font-size: 0.9rem;">نظام الحجوزات الطبية</p>
+                <p style="color: var(--text-muted); margin: 10px 0 0 0; font-size: 0.9rem;">نظام الحجوزات الطبية</p>
             </div>
 
             <nav class="sidebar-nav">
@@ -434,7 +439,7 @@ require_once '../includes/dashboard_header.php';
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="<?php echo BASE_URL; ?>logout.php" class="nav-link" style="color: #e53e3e;">
+                                         <a href="<?php echo BASE_URL; ?>logout.php" class="nav-link" style="color: var(--danger-color);">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>تسجيل الخروج</span>
                     </a>

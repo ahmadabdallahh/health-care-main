@@ -36,10 +36,13 @@ try {
 require_once '../includes/dashboard_header.php';
 ?>
 
+<!-- Include the color scheme CSS -->
+<link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/color-scheme.php">
+
 <style>
 /* Appointments Page Styles */
 .appointments-page {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* background: var(--gradient-primary); */
     min-height: 100vh;
     padding: 20px;
 }
@@ -54,11 +57,11 @@ require_once '../includes/dashboard_header.php';
 }
 
 .enhanced-sidebar {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--glass-bg);
     backdrop-filter: blur(10px);
     border-radius: 20px;
     padding: 30px 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--glass-shadow);
     height: fit-content;
     position: sticky;
     top: 20px;
@@ -72,7 +75,7 @@ require_once '../includes/dashboard_header.php';
 }
 
 .sidebar-header h3 {
-    color: #4a5568;
+    color: var(--text-secondary);
     font-size: 24px;
     font-weight: 700;
     margin: 0;
@@ -90,7 +93,7 @@ require_once '../includes/dashboard_header.php';
     display: flex;
     align-items: center;
     padding: 15px 20px;
-    color: #4a5568;
+    color: var(--text-secondary);
     text-decoration: none;
     border-radius: 12px;
     transition: all 0.3s ease;
@@ -98,16 +101,17 @@ require_once '../includes/dashboard_header.php';
 }
 
 .nav-link:hover {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background:#dcdcdc;
+    color: black;
     transform: translateX(-5px);
-    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 10px 20px var(--shadow-primary);
 }
 
 .nav-link.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    /* background: var(--gradient-primary); */
+    background: #dcdcdc ip !important;
+    color: black;
+    box-shadow: 0 10px 20px var(--shadow-primary);
 }
 
 .nav-link i {
@@ -122,20 +126,21 @@ require_once '../includes/dashboard_header.php';
 }
 
 .main-content {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--glass-bg);
     backdrop-filter: blur(10px);
     border-radius: 20px;
     padding: 40px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--glass-shadow);
 }
 
 .page-header {
     text-align: center;
     margin-bottom: 40px;
     padding: 30px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #fefefe !important;
+    color: black !important;
     border-radius: 20px;
-    color: white;
+    border: 2px solid #dcdcdc;
 }
 
 .page-header h1 {
@@ -157,17 +162,17 @@ require_once '../includes/dashboard_header.php';
 }
 
 .appointment-card {
-    background: white;
+    background: var(--bg-primary);
     border-radius: 20px;
     padding: 25px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px var(--shadow-medium);
     transition: all 0.3s ease;
-    border-left: 5px solid #667eea;
+    border-left: 5px solid var(--primary-color);
 }
 
 .appointment-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 20px 40px var(--shadow-dark);
 }
 
 .appointment-header {
@@ -178,14 +183,14 @@ require_once '../includes/dashboard_header.php';
 }
 
 .appointment-info h3 {
-    color: #2d3748;
+    color: var(--text-primary);
     font-size: 1.3rem;
     font-weight: 700;
     margin: 0 0 10px 0;
 }
 
 .appointment-info p {
-    color: #718096;
+    color: var(--text-muted);
     margin: 5px 0;
     font-size: 0.95rem;
 }
@@ -199,23 +204,23 @@ require_once '../includes/dashboard_header.php';
 }
 
 .status-confirmed {
-    background: #c6f6d5;
-    color: #22543d;
+    background: var(--status-confirmed-bg);
+    color: var(--status-confirmed-text);
 }
 
 .status-completed {
-    background: #bee3f8;
-    color: #2a4365;
+    background: var(--status-completed-bg);
+    color: var(--status-completed-text);
 }
 
 .status-cancelled {
-    background: #fed7d7;
-    color: #742a2a;
+    background: var(--status-cancelled-bg);
+    color: var(--status-cancelled-text);
 }
 
 .status-pending {
-    background: #fef5e7;
-    color: #744210;
+    background: var(--status-pending-bg);
+    color: var(--status-pending-text);
 }
 
 .appointment-details {
@@ -233,14 +238,14 @@ require_once '../includes/dashboard_header.php';
 }
 
 .detail-item i {
-    color: #667eea;
+    color: var(--primary-color);
     margin-left: 10px;
     width: 20px;
     text-align: center;
 }
 
 .detail-item span {
-    color: #4a5568;
+    color: var(--text-secondary);
     font-weight: 600;
 }
 
@@ -253,7 +258,7 @@ require_once '../includes/dashboard_header.php';
 }
 
 .action-btn {
-    padding: 10px 20px;
+    padding: 15px 25px;
     border: none;
     border-radius: 10px;
     font-weight: 600;
@@ -261,16 +266,19 @@ require_once '../includes/dashboard_header.php';
     transition: all 0.3s ease;
     cursor: pointer;
     font-size: 0.9rem;
+    box-shadow: 0 10px 20px var(--shadow-primary);
+    background: #dcdcdc !important;
+    color: black !important;
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--gradient-primary);
     color: white;
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 10px 20px var(--shadow-primary);
 }
 
 .btn-secondary {
@@ -481,14 +489,14 @@ require_once '../includes/dashboard_header.php';
                                     <a href="#" class="action-btn btn-secondary">
                                         <i class="fas fa-star"></i> تقييم الطبيب
                                     </a>
-                                <?php else: ?>
+            <?php else: ?>
                                     <a href="#" class="action-btn btn-secondary">
                                         <i class="fas fa-eye"></i> عرض التفاصيل
                                     </a>
-                                <?php endif; ?>
+                                        <?php endif; ?>
                             </div>
                         </div>
-                    <?php endforeach; ?>
+                            <?php endforeach; ?>
                 <?php else: ?>
                     <div class="empty-state">
                         <i class="fas fa-calendar-times"></i>
@@ -497,8 +505,8 @@ require_once '../includes/dashboard_header.php';
                         <a href="<?php echo BASE_URL; ?>#doctors" class="action-btn btn-primary">
                             <i class="fas fa-plus"></i> حجز موعد جديد
                         </a>
-                    </div>
-                <?php endif; ?>
+                </div>
+            <?php endif; ?>
             </div>
         </div>
     </div>

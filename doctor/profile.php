@@ -31,8 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['toggle_oncall'])) {
 require_once '../includes/dashboard_header.php';
 ?>
 
-<!-- Include the color scheme CSS -->
-<link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/color-scheme.php">
+<!-- Include the doctor theme CSS -->
+<link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/doctor-theme.php">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -518,6 +518,20 @@ require_once '../includes/dashboard_header.php';
                      alt="صورة الطبيب" class="doctor-avatar">
                 <div class="doctor-name">د. <?php echo htmlspecialchars($user['full_name'] ?? 'اسم الطبيب'); ?></div>
                 <div class="doctor-specialty"><?php echo htmlspecialchars($user['specialty'] ?? 'طب عام'); ?></div>
+                <div class="theme-indicator" style="margin-top: 10px; padding: 5px 10px; background: var(--primary-light); color: var(--primary-color); border-radius: 8px; font-size: 0.8rem; font-weight: 600;">
+                    <i class="fas fa-palette mr-1"></i>
+                    <?php
+                    $theme_names = [
+                        'medical-blue' => 'الأزرق الطبي',
+                        'medical-green' => 'الأخضر الطبي',
+                        'warm-orange' => 'البرتقالي الدافئ',
+                        'professional-gray' => 'الرمادي المهني',
+                        'royal-purple' => 'البنفسجي الملكي',
+                        'emergency-red' => 'الأحمر الطوارئ'
+                    ];
+                    echo $theme_names[$_SESSION['doctor_theme'] ?? 'medical-blue'] ?? 'الأزرق الطبي';
+                    ?>
+                </div>
 
                 <!-- On-Call Toggle -->
                 <form method="POST" class="oncall-toggle">
@@ -579,6 +593,9 @@ require_once '../includes/dashboard_header.php';
                     <button onclick="previousDay()"><i class="fas fa-chevron-right"></i></button>
                     <button onclick="nextDay()"><i class="fas fa-chevron-left"></i></button>
                     <button onclick="today()">اليوم</button>
+                    <a href="color-customizer.php" class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-4 py-2 rounded-lg transition-all duration-300 transform hover:scale-105">
+                        <i class="fas fa-palette mr-2"></i>تخصيص الألوان
+                    </a>
                 </div>
             </div>
 

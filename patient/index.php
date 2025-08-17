@@ -442,7 +442,7 @@ require_once '../includes/dashboard_header.php';
 
 <div class="patient-dashboard">
 <div class="dashboard-container">
-        <!-- Enhanced Sidebar -->
+        <!-- NOTE: Enhanced Sidebar -->
         <div class="enhanced-sidebar">
             <div class="sidebar-header">
                 <h3>شفاء</h3>

@@ -1,4 +1,6 @@
 <?php
+// Ensure no output before headers
+ob_start();
 session_start();
 require_once 'includes/functions.php';
 
@@ -13,8 +15,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($email) || empty($password)) {
         $error = 'يرجى ملء جميع الحقول المطلوبة';
     } else {
-        $db = new Database();
-        $conn = $db->getConnection();
+        // Use existing database connection from config.php
+        global $conn;
 
         if (!$conn) {
             $error = 'خطأ في الاتصال بقاعدة البيانات';
@@ -23,33 +25,48 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->execute([$email]);
             $user = $stmt->fetch();
 
-            if (!$user || !password_verify($password, $user['password'])) {
+            // Debug: Log user data (remove in production)
+            error_log("Login attempt - Email: " . $email . ", User found: " . ($user ? 'Yes' : 'No'));
+
+            if (!$user || $password !== $user['password']) {
                 $error = 'اسم المستخدم أو كلمة المرور غير صحيحة';
+                // Debug: Log password comparison (remove in production)
+                if ($user) {
+                    error_log("Password comparison - Input: " . $password . ", Stored: " . $user['password'] . ", Match: " . ($password === $user['password'] ? 'Yes' : 'No'));
+                }
             } else {
+                // Debug logging
+                error_log("Login successful - User ID: " . $user['id'] . ", Role: " . $user['user_type']);
+
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['full_name'];
-                // Use the correct column name: 'user_type'
                 $_SESSION['user_type'] = $user['user_type'];
+                $_SESSION['role'] = $user['user_type']; // Add this for compatibility
 
                 // Final, corrected redirection logic
                 $user_role = $user['user_type'];
+                error_log("Redirecting user with role: " . $user_role);
 
                 if ($user_role === 'admin') {
+                    error_log("Redirecting to admin dashboard");
                     header("Location: admin/index.php");
                     exit();
                 }
 
                 if ($user_role === 'doctor') {
+                    error_log("Redirecting to doctor dashboard");
                     header("Location: doctor/index.php");
                     exit();
                 }
 
                 if ($user_role === 'user' || $user_role === 'patient') {
+                    error_log("Redirecting to patient dashboard");
                     header("Location: patient/index.php");
                     exit();
                 }
 
                 // Default fallback if no role matches
+                error_log("No role match, redirecting to index");
                 header("Location: index.php");
                 exit();
             }

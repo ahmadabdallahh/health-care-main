@@ -38,11 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($stmt->fetch()) {
                 $error = 'البريد الإلكتروني مستخدم بالفعل';
             } else {
-                // إنشاء المستخدم الجديد
-                $hashed_password = hash_password($password);
+                // إنشاء المستخدم الجديد (تخزين كلمة المرور كنص عادي مؤقتاً)
                 $stmt = $conn->prepare("INSERT INTO users (full_name, email, phone, date_of_birth, gender, password, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())");
 
-                if ($stmt->execute([$full_name, $email, $phone, $date_of_birth, $gender, $hashed_password])) {
+                if ($stmt->execute([$full_name, $email, $phone, $date_of_birth, $gender, $password])) {
                     $success = 'تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول.';
                     // تفريغ الحقول
                     $full_name = $email = $phone = $date_of_birth = $gender = '';

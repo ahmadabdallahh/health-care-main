@@ -21,7 +21,7 @@ if (!function_exists('is_logged_in')) {
         <div class="flex items-center justify-between h-16">
             <!-- Logo -->
             <div class="flex-shrink-0">
-                <a href="/app-demo/index.php" class="flex items-center text-white hover:text-gray-200 transition">
+                <a href="<?php echo BASE_URL; ?>index.php" class="flex items-center text-white hover:text-gray-200 transition">
                     <i class="fas fa-heartbeat text-2xl ml-2"></i>
                     <span class="font-bold text-xl">نظام المواعيد</span>
                 </a>
@@ -29,19 +29,19 @@ if (!function_exists('is_logged_in')) {
 
             <!-- Desktop Menu -->
             <div class="hidden md:flex items-center space-x-4 space-x-reverse">
-                <a href="/app-demo/index.php" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">الرئيسية</a>
-                <a href="/app-demo/search.php" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">البحث</a>
+                <a href="<?php echo BASE_URL; ?>index.php" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">الرئيسية</a>
+                <a href="<?php echo BASE_URL; ?>search.php" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">البحث</a>
                 <?php if (is_logged_in()): ?>
-                                    <?php if ($_SESSION['role'] === 'patient'): ?>
-                    <a href="/app-demo/patient/index.php" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">لوحة التحكم</a>
-                    <a href="/app-demo/patient/appointments.php" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">مواعيدي</a>
-                <?php elseif ($_SESSION['role'] === 'doctor'): ?>
-                    <a href="/app-demo/doctor/index.php" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">لوحة التحكم</a>
+                                    <?php if ($_SESSION['user_type'] === 'patient'): ?>
+                    <a href="<?php echo BASE_URL; ?>patient/index.php" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">لوحة التحكم</a>
+                    <a href="<?php echo BASE_URL; ?>patient/appointments.php" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">مواعيدي</a>
+                <?php elseif ($_SESSION['user_type'] === 'doctor'): ?>
+                    <a href="<?php echo BASE_URL; ?>doctor/index.php" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">لوحة التحكم</a>
                     <?php endif; ?>
-                    <a href="/app-demo/logout.php" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition">تسجيل الخروج</a>
+                    <a href="<?php echo BASE_URL; ?>logout.php" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition">تسجيل الخروج</a>
                 <?php else: ?>
-                    <a href="/app-demo/login.php" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">تسجيل الدخول</a>
-                    <a href="/app-demo/register.php" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition">تسجيل جديد</a>
+                    <a href="<?php echo BASE_URL; ?>login.php" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">تسجيل الدخول</a>
+                    <a href="<?php echo BASE_URL; ?>register.php" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition">تسجيل جديد</a>
                 <?php endif; ?>
             </div>
 
@@ -65,19 +65,19 @@ if (!function_exists('is_logged_in')) {
     <!-- Mobile menu, show/hide based on menu state. -->
     <div x-show="mobileMenuOpen" @click.away="mobileMenuOpen = false" class="md:hidden" id="mobile-menu">
         <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-800">
-            <a href="/app-demo/index.php" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">الرئيسية</a>
-            <a href="/app-demo/search.php" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">البحث</a>
+            <a href="<?php echo BASE_URL; ?>index.php" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">الرئيسية</a>
+            <a href="<?php echo BASE_URL; ?>search.php" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">البحث</a>
             <?php if (is_logged_in()): ?>
-                <?php if ($_SESSION['role'] === 'patient'): ?>
-                    <a href="/app-demo/patient/index.php" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">لوحة التحكم</a>
-                    <a href="/app-demo/patient/appointments.php" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">مواعيدي</a>
-                <?php elseif ($_SESSION['role'] === 'doctor'): ?>
-                    <a href="/app-demo/doctor/index.php" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">لوحة التحكم</a>
+                <?php if ($_SESSION['user_type'] === 'patient'): ?>
+                    <a href="<?php echo BASE_URL; ?>patient/index.php" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">لوحة التحكم</a>
+                    <a href="<?php echo BASE_URL; ?>patient/appointments.php" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">مواعيدي</a>
+                <?php elseif ($_SESSION['user_type'] === 'doctor'): ?>
+                    <a href="<?php echo BASE_URL; ?>doctor/index.php" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">لوحة التحكم</a>
                 <?php endif; ?>
-                <a href="/app-demo/logout.php" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">تسجيل الخروج</a>
+                <a href="<?php echo BASE_URL; ?>logout.php" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">تسجيل الخروج</a>
             <?php else: ?>
-                <a href="/app-demo/login.php" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">تسجيل الدخول</a>
-                <a href="/app-demo/register.php" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">تسجيل جديد</a>
+                <a href="<?php echo BASE_URL; ?>login.php" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">تسجيل الدخول</a>
+                <a href="<?php echo BASE_URL; ?>register.php" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">تسجيل جديد</a>
             <?php endif; ?>
         </div>
     </div>

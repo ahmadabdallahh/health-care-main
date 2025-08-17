@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once 'includes/functions.php';
 
 // Generate CSRF token if it doesn't exist
@@ -21,6 +22,9 @@ $form_data = [
 ];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Debug: Log form data (remove in production)
+    error_log("Registration form submitted - POST data: " . print_r($_POST, true));
+
     // 1. CSRF Token Validation
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
         $errors['csrf'] = 'محاولة غير صالحة، يرجى تحديث الصفحة والمحاولة مرة أخرى.';
@@ -32,6 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $form_data[$key] = clean_input($_POST[$key]);
         }
     }
+
+    // Debug: Log processed form data (remove in production)
+    error_log("Processed form data: " . print_r($form_data, true));
 
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
@@ -85,6 +92,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $errors['password'] = $password_validation['message'];
         }
 
+        // Debug: Log password validation (remove in production)
+        error_log("Password validation result: " . print_r($password_validation, true));
+
         if ($password !== $confirm_password) $errors['confirm_password'] = 'كلمة المرور غير متطابقة';
 
         if (empty($form_data['phone'])) {
@@ -107,11 +117,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if (empty($form_data['gender'])) $errors['gender'] = 'الرجاء اختيار الجنس';
 
-        if (empty($form_data['user_type'])) $errors['user_type'] = 'يرجى تحديد نوع الحساب';
+        if (empty($form_data['role'])) {
+            $errors['role'] = 'يرجى تحديد نوع الحساب';
+        }
 
         if (!isset($_POST['terms'])) $errors['terms'] = 'يجب الموافقة على الشروط';
 
         if (empty($errors)) {
+            // Debug: Log validation success (remove in production)
+            error_log("Registration validation passed - proceeding with database insert");
+
             $db = new Database();
             $conn = $db->getConnection();
 
@@ -125,31 +140,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $errors['email'] = 'البريد الإلكتروني أو اسم المستخدم موجود مسبقاً';
                     $conn->rollBack(); // Rollback if user exists
                 } else {
-                // Hash the password securely
-                $hashed_password = hash_password($password);
+                // Store password as plain text (hashing will be added later)
+                $plain_password = $password;
 
                 // Set default role if not provided (for regular users)
                 $role = !empty($form_data['role']) ? $form_data['role'] : 'user';
 
-                // Prepare SQL statement with ALL required fields including role
+                // Prepare SQL statement with ALL required fields including user_type
                 $stmt = $conn->prepare(
-                    "INSERT INTO users (username, full_name, email, password, phone, date_of_birth, gender, role)
-                     VALUES (:username, :full_name, :email, :password, :phone, :date_of_birth, :gender, :role)"
+                    "INSERT INTO users (username, full_name, email, password, phone, date_of_birth, gender, user_type)
+                     VALUES (:username, :full_name, :email, :password, :phone, :date_of_birth, :gender, :user_type)"
                 );
 
-                // Execute with all parameters
-                $stmt->execute([
+                // Debug: Log SQL parameters (remove in production)
+                $params = [
                     ':username' => $form_data['username'],
                     ':full_name' => $form_data['full_name'],
                     ':email' => $form_data['email'],
-                    ':password' => $hashed_password,
+                    ':password' => $plain_password,
                     ':phone' => $form_data['phone'],
                     ':date_of_birth' => $form_data['date_of_birth'],
                     ':gender' => $form_data['gender'],
-                    ':role' => $role
-                ]);
+                    ':user_type' => $role
+                ];
+                error_log("Registration SQL parameters: " . print_r($params, true));
+
+                // Execute with all parameters
+                $stmt->execute($params);
 
                 $user_id = $conn->lastInsertId();
+
+                // Debug: Log user creation (remove in production)
+                error_log("User created successfully with ID: " . $user_id);
 
                 // If the user is a doctor, add them to the doctors table as well
                 if ($role === 'doctor') {
@@ -162,11 +184,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         ':full_name' => $form_data['full_name'],
                         ':email' => $form_data['email'],
                         ':phone' => $form_data['phone'],
-                        ':image' => basename($profile_image_path) // Save only the image name
+                        ':image' => !empty($profile_image_path) ? basename($profile_image_path) : null // Save only the image name
                     ]);
                 }
 
                 $conn->commit(); // Commit the transaction
+
+                // Debug: Log transaction commit (remove in production)
+                error_log("Registration transaction committed successfully");
+
                 $success = 'تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول.';
                 // Clear form data on success
                 foreach ($form_data as $key => $value) {
@@ -176,7 +202,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             } catch (PDOException $e) {
                 $conn->rollBack(); // Rollback on error
                 $errors['general'] = 'حدث خطأ فني أثناء إنشاء الحساب. يرجى المحاولة مرة أخرى.';
-                // Optional: Log the detailed error for debugging: error_log($e->getMessage());
+                // Log the detailed error for debugging
+                error_log("Registration error: " . $e->getMessage());
             }
         }
     }

@@ -22,32 +22,32 @@ function is_active($page_name, $current_page) {
 
 <div id="sidebar" class="fixed top-0 right-0 h-full bg-white shadow-lg w-64 z-50 hidden lg:block flex flex-col">
     <div class="px-6 py-4">
-        <a href="/app-demo/" class="text-2xl font-bold text-gray-800 hover:text-gray-700">شفاء</a>
+        <a href="<?php echo BASE_URL; ?>" class="text-2xl font-bold text-gray-800 hover:text-gray-700">شفاء</a>
     </div>
 
     <nav class="flex-1 overflow-y-auto px-4">
         <ul class="space-y-2">
             <?php if ($is_admin): ?>
                 <li>
-                    <a href="/app-demo/admin/index.php" class="flex items-center justify-between py-3 px-4 rounded-lg <?php echo get_active_class('index.php'); ?>">
+                    <a href="<?php echo BASE_URL; ?>admin/index.php" class="flex items-center justify-between py-3 px-4 rounded-lg <?php echo get_active_class('index.php'); ?>">
                         <span>لوحة التحكم</span>
                         <i class="fas fa-tachometer-alt"></i>
                     </a>
                 </li>
                 <li>
-                    <a href="/app-demo/admin/manage_users.php" class="flex items-center justify-between py-3 px-4 rounded-lg <?php echo get_active_class('manage_users.php'); ?>">
+                    <a href="<?php echo BASE_URL; ?>admin/manage_users.php" class="flex items-center justify-between py-3 px-4 rounded-lg <?php echo get_active_class('manage_users.php'); ?>">
                         <span>إدارة المستخدمين</span>
                         <i class="fas fa-users"></i>
                     </a>
                 </li>
                 <li>
-                    <a href="/app-demo/admin/manage_doctors.php" class="flex items-center justify-between py-3 px-4 rounded-lg <?php echo get_active_class('manage_doctors.php'); ?>">
+                    <a href="<?php echo BASE_URL; ?>admin/manage_doctors.php" class="flex items-center justify-between py-3 px-4 rounded-lg <?php echo get_active_class('manage_doctors.php'); ?>">
                         <span>إدارة الأطباء</span>
                         <i class="fas fa-user-md"></i>
                     </a>
                 </li>
                 <li>
-                    <a href="/app-demo/admin/manage_bookings.php" class="flex items-center justify-between py-3 px-4 rounded-lg <?php echo get_active_class('manage_bookings.php'); ?>">
+                    <a href="<?php echo BASE_URL; ?>admin/manage_bookings.php" class="flex items-center justify-between py-3 px-4 rounded-lg <?php echo get_active_class('manage_bookings.php'); ?>">
                         <span>إدارة الحجوزات</span>
                         <i class="fas fa-calendar-check"></i>
                     </a>
@@ -55,25 +55,25 @@ function is_active($page_name, $current_page) {
             <?php elseif ($is_doctor): ?>
                 <!-- Doctor Links -->
                 <li>
-                    <a href="/app-demo/doctor/index.php" class="flex items-center justify-between py-3 px-4 rounded-lg <?php echo get_active_class('index.php'); ?>">
+                    <a href="<?php echo BASE_URL; ?>doctor/index.php" class="flex items-center justify-between py-3 px-4 rounded-lg <?php echo get_active_class('index.php'); ?>">
                         <span>لوحة التحكم</span>
                         <i class="fas fa-tachometer-alt"></i>
                     </a>
                 </li>
                 <li>
-                    <a href="/app-demo/doctor/appointments.php" class="flex items-center justify-between py-3 px-4 rounded-lg <?php echo get_active_class('appointments.php'); ?>">
+                    <a href="<?php echo BASE_URL; ?>doctor/appointments.php" class="flex items-center justify-between py-3 px-4 rounded-lg <?php echo get_active_class('appointments.php'); ?>">
                         <span>جدول المواعيد</span>
                         <i class="fas fa-calendar-alt"></i>
                     </a>
                 </li>
                 <li>
-                    <a href="/app-demo/doctor/profile.php" class="flex items-center justify-between py-3 px-4 rounded-lg <?php echo get_active_class('profile.php'); ?>">
+                    <a href="<?php echo BASE_URL; ?>doctor/profile.php" class="flex items-center justify-between py-3 px-4 rounded-lg <?php echo get_active_class('profile.php'); ?>">
                         <span>إعدادات حسابي</span>
                         <i class="fas fa-user-cog"></i>
                     </a>
                 </li>
                 <li>
-                    <a href="/app-demo/doctor/availability.php" class="flex items-center justify-between py-3 px-4 rounded-lg <?php echo get_active_class('availability.php'); ?>">
+                    <a href="<?php echo BASE_URL; ?>doctor/availability.php" class="flex items-center justify-between py-3 px-4 rounded-lg <?php echo get_active_class('availability.php'); ?>">
                         <span>إدارة التوافر</span>
                         <i class="fas fa-clock"></i>
                     </a>
@@ -81,7 +81,7 @@ function is_active($page_name, $current_page) {
             <?php elseif ($is_patient): ?>
                 <!-- Patient Links -->
                 <li>
-                    <a href="/app-demo/patient/index.php" class="flex items-center justify-between py-3 px-4 rounded-lg <?php echo get_active_class('index.php'); ?>">
+                    <a href="<?php echo BASE_URL; ?>patient/index.php" class="flex items-center justify-between py-3 px-4 rounded-lg <?php echo get_active_class('index.php'); ?>">
                         <span>لوحة التحكم</span>
                         <i class="fas fa-tachometer-alt"></i>
                     </a>
@@ -105,7 +105,7 @@ function is_active($page_name, $current_page) {
                     </a>
                 </li>
                 <li>
-                    <a href="/app-demo/#doctors" class="flex items-center justify-between py-3 px-4 rounded-lg text-gray-600">
+                    <a href="<?php echo BASE_URL; ?>#doctors" class="flex items-center justify-between py-3 px-4 rounded-lg text-gray-600">
                         <span>حجز موعد جديد</span>
                         <i class="fas fa-search"></i>
                     </a>
@@ -113,7 +113,7 @@ function is_active($page_name, $current_page) {
             <?php elseif ($is_hospital): ?>
                 <!-- Hospital Links -->
                 <li>
-                    <a href="/app-demo/hospital/index.php" class="flex items-center justify-between py-3 px-4 rounded-lg <?php echo get_active_class('index.php'); ?>">
+                    <a href="<?php echo BASE_URL; ?>hospital/index.php" class="flex items-center justify-between py-3 px-4 rounded-lg <?php echo get_active_class('index.php'); ?>">
                         <span>لوحة التحكم</span>
                         <i class="fas fa-tachometer-alt"></i>
                     </a>
@@ -144,13 +144,13 @@ function is_active($page_name, $current_page) {
     <div class="p-4 mt-auto">
         <ul class="space-y-2">
             <li>
-                <a href="/app-demo/<?php echo $user_type; ?>/profile.php" class="flex items-center justify-between py-2 px-4 rounded-lg <?php echo get_active_class('profile.php'); ?> hover:bg-gray-100 transition-colors duration-200">
+                <a href="<?php echo BASE_URL . $user_type; ?>/profile.php" class="flex items-center justify-between py-2 px-4 rounded-lg <?php echo get_active_class('profile.php'); ?> hover:bg-gray-100 transition-colors duration-200">
                     <span class="font-semibold">الإعدادات</span>
                     <i class="fas fa-cog"></i>
                 </a>
             </li>
             <li>
-                <a href="/app-demo/logout.php" class="flex items-center justify-between py-2 px-4 rounded-lg text-red-500 hover:bg-red-50 transition-colors duration-200">
+                <a href="<?php echo BASE_URL; ?>logout.php" class="flex items-center justify-between py-2 px-4 rounded-lg text-red-500 hover:bg-red-50 transition-colors duration-200">
                     <span class="font-semibold">تسجيل الخروج</span>
                     <i class="fas fa-sign-out-alt"></i>
                 </a>

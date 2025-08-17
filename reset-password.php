@@ -35,11 +35,10 @@ try {
             } elseif ($password !== $confirm_password) {
                 $error = 'كلمة المرور غير متطابقة';
             } else {
-                // تحديث كلمة المرور
-                $hashed_password = hash_password($password);
+                // تحديث كلمة المرور (تخزين كلمة المرور كنص عادي مؤقتاً)
                 $update_stmt = $conn->prepare("UPDATE users SET password = ? WHERE id = ?");
 
-                if ($update_stmt->execute([$hashed_password, $token_data['user_id']])) {
+                if ($update_stmt->execute([$password, $token_data['user_id']])) {
                     // تمييز الرمز بأنه مستخدم
                     $used_stmt = $conn->prepare("UPDATE password_reset_tokens SET used = TRUE WHERE id = ?");
                     $used_stmt->execute([$token_data['id']]);

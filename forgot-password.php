@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $stmt->execute([$user['id'], $token, $expires_at]);
 
                 // إرسال البريد الإلكتروني باستخدام PHPMailer
-                $reset_link = "http://localhost/app-demo/reset-password.php?token=" . $token;
+                $reset_link = BASE_URL . "reset-password.php?token=" . $token;
 
                 $mail = new PHPMailer(true);
 

@@ -4,18 +4,19 @@ require_once '../config.php';
 require_once '../includes/functions.php';
 
 // Ensure user is logged in as a patient
-if (!is_logged_in() || $_SESSION['role'] !== 'patient') {
+if (!is_logged_in() || ($_SESSION['role'] !== 'patient' && $_SESSION['user_type'] !== 'patient')) {
     header('Location: ' . BASE_URL . 'login.php');
     exit();
 }
 
 $user = get_logged_in_user();
 $pageTitle = 'لوحة تحكم المريض';
+$page_title = $pageTitle; // Set both for compatibility
 
 // Fetch patient-specific statistics
 $user_id = $_SESSION['user_id'];
-$upcoming_appointments = get_patient_appointment_count($user_id, 'confirmed');
-$completed_appointments = get_patient_appointment_count($user_id, 'completed');
+$upcoming_appointments = get_patient_appointment_count($conn, $user_id, 'confirmed');
+$completed_appointments = get_patient_appointment_count($conn, $user_id, 'completed');
 
 require_once '../includes/dashboard_header.php';
 ?>

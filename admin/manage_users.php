@@ -3,19 +3,14 @@ session_start();
 require_once '../config.php';
 require_once '../includes/functions.php';
 
-// Ensure user is logged in as an admin
-if (!is_logged_in() || $_SESSION['role'] !== 'admin') {
+// Ensure user is logged in as an admin (use unified role check)
+if (!check_user_role('admin')) {
     header('Location: ' . BASE_URL . 'login.php');
     exit();
 }
 
 require_once '../includes/functions.php';
 require_once '../config/database.php';
-
-// Ensure only admins can access this page
-if (!check_user_role('admin')) {
-    redirect('../login.php');
-}
 
 // Fetch all users for display
 $db = new Database();

@@ -12,7 +12,7 @@ check_user_role('admin');
 // Add a critical check to ensure user is logged in properly
 if (!isset($_SESSION['user_id'])) {
     // If user_id is not in session, redirect to login page
-    header("Location: /app-demo/login.php?error=session_expired");
+    header("Location: " . BASE_URL . "login.php?error=session_expired");
     exit();
 }
 
@@ -91,12 +91,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_password'])) {
     $stmt->execute([$user_id]);
     $user = $stmt->fetch();
 
-    if ($user && password_verify($current_password, $user['password'])) {
+    if ($user && $current_password === $user['password']) {
         if ($new_password === $confirm_password) {
             if (strlen($new_password) >= 8) {
-                $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+                // Store password as plain text (hashing will be added later)
                 $update_stmt = $pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
-                if ($update_stmt->execute([$hashed_password, $user_id])) {
+                if ($update_stmt->execute([$new_password, $user_id])) {
                     $message = 'تم تحديث كلمة المرور بنجاح.';
                     $message_type = 'success';
                 } else {
@@ -175,7 +175,7 @@ $page_title = "الملف الشخصي";
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <!-- Profile Picture -->
                             <div class="md:col-span-1 flex flex-col items-center">
-                                <img id="avatar-preview" src="/app-demo/<?php echo !empty($admin_data['profile_image']) ? htmlspecialchars($admin_data['profile_image']) : 'assets/images/default-avatar.png'; ?>" alt="Avatar" class="w-32 h-32 rounded-full object-cover mb-4 border-2 border-gray-200">
+                                <img id="avatar-preview" src="<?php echo BASE_URL; ?><?php echo !empty($admin_data['profile_image']) ? htmlspecialchars($admin_data['profile_image']) : 'assets/images/default-avatar.png'; ?>" alt="Avatar" class="w-32 h-32 rounded-full object-cover mb-4 border-2 border-gray-200">
                                 <input type="file" name="profile_image" id="profile_image" class="hidden" onchange="previewAvatar(event)">
                                 <label for="profile_image" class="cursor-pointer bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">
                                     تغيير الصورة

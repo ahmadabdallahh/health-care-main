@@ -60,10 +60,9 @@ function get_logged_in_user()
     }
 
     try {
-        $db = new Database();
-        $conn = $db->getConnection();
+        global $conn;
 
-        if (!$conn) {
+        if (!$conn || !($conn instanceof PDO)) {
             return null;
         }
 
@@ -184,10 +183,29 @@ function validate_password($password)
  * Hash a password.
  * @param string $password
  * @return string|false
+ *
+ * NOTE: Password hashing is temporarily disabled. This function will be re-enabled later.
  */
 function hash_password($password)
 {
-    return password_hash($password, PASSWORD_DEFAULT);
+    // Temporarily return plain text password - will be re-enabled later
+    return $password;
+    // return password_hash($password, PASSWORD_DEFAULT);
+}
+
+/**
+ * Verify password (temporarily disabled hashing).
+ * @param string $password
+ * @param string $hash
+ * @return bool
+ *
+ * NOTE: Password verification is temporarily disabled. This function will be re-enabled later.
+ */
+function verify_password($password, $hash)
+{
+    // Temporarily compare plain text passwords - will be re-enabled later
+    return $password === $hash;
+    // return password_verify($password, $hash);
 }
 
 // ====================================================================
@@ -585,8 +603,7 @@ function register_user($data) {
             return ['success' => false, 'message' => 'البريد الإلكتروني أو رقم الهاتف موجود مسبقاً'];
         }
 
-        // إنشاء المستخدم الجديد
-        $hashed_password = hash_password($data['password']);
+        // إنشاء المستخدم الجديد (تخزين كلمة المرور كنص عادي مؤقتاً)
 
         $stmt = $conn->prepare("
             INSERT INTO users (full_name, email, phone, password, birth_date, gender, user_type, created_at, is_active)
@@ -597,7 +614,7 @@ function register_user($data) {
             clean_input($data['full_name']),
             clean_input($data['email']),
             clean_input($data['phone']),
-            $hashed_password,
+            $data['password'],
             $data['birth_date'],
             $data['gender'] ?? 'male'
         ]);
@@ -1117,9 +1134,9 @@ function get_appointments_by_doctor_id($doctor_id) {
 // DASHBOARD STATS FUNCTIONS
 // ==============================================
 
-function get_total_count($pdo, $table) {
+function get_total_count($conn, $table) {
     try {
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM {$table}");
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM {$table}");
         $stmt->execute();
         return $stmt->fetchColumn();
     } catch (PDOException $e) {
@@ -1129,9 +1146,9 @@ function get_total_count($pdo, $table) {
     }
 }
 
-function get_user_type_count($pdo, $user_type) {
+function get_user_type_count($conn, $user_type) {
     try {
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE user_type = ?");
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM users WHERE user_type = ?");
         $stmt->execute([$user_type]);
         return $stmt->fetchColumn();
     } catch (PDOException $e) {
@@ -1139,10 +1156,10 @@ function get_user_type_count($pdo, $user_type) {
     }
 }
 
-function get_doctor_appointment_count($pdo, $doctor_id, $status) {
+function get_doctor_appointment_count($conn, $doctor_id, $status) {
     try {
         $sql = "SELECT COUNT(*) FROM appointments WHERE doctor_id = ? AND status = ?";
-        $stmt = $pdo->prepare($sql);
+        $stmt = $conn->prepare($sql);
         $stmt->execute([$doctor_id, $status]);
         return $stmt->fetchColumn();
     } catch (PDOException $e) {
@@ -1150,11 +1167,11 @@ function get_doctor_appointment_count($pdo, $doctor_id, $status) {
     }
 }
 
-function get_doctor_patient_count($pdo, $doctor_id) {
+function get_doctor_patient_count($conn, $doctor_id) {
     try {
         // Counts distinct patients who have had appointments with this doctor
         $sql = "SELECT COUNT(DISTINCT user_id) FROM appointments WHERE doctor_id = ?";
-        $stmt = $pdo->prepare($sql);
+        $stmt = $conn->prepare($sql);
         $stmt->execute([$doctor_id]);
         return $stmt->fetchColumn();
     } catch (PDOException $e) {
@@ -1162,10 +1179,10 @@ function get_doctor_patient_count($pdo, $doctor_id) {
     }
 }
 
-function get_patient_appointment_count($pdo, $user_id, $status) {
+function get_patient_appointment_count($conn, $user_id, $status) {
     try {
         $sql = "SELECT COUNT(*) FROM appointments WHERE user_id = ? AND status = ?";
-        $stmt = $pdo->prepare($sql);
+        $stmt = $conn->prepare($sql);
         $stmt->execute([$user_id, $status]);
         return $stmt->fetchColumn();
     } catch (PDOException $e) {
@@ -1198,9 +1215,9 @@ function get_users_by_type($conn, $user_type) {
 }
 
 // Function to get all users from the database
-function get_all_users($pdo) {
+function get_all_users($conn) {
     $sql = "SELECT id, full_name, username, email, role, created_at FROM users ORDER BY created_at DESC";
-    $stmt = $pdo->prepare($sql);
+    $stmt = $conn->prepare($sql);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -1489,6 +1506,7 @@ function get_doctor_dashboard_stats($pdo, $doctor_id) {
  * @param int $limit
  * @return array
  */
+
 function get_doctor_upcoming_appointments($pdo, $doctor_id, $limit = 5) {
     try {
         $today = date('Y-m-d');
@@ -1533,18 +1551,40 @@ function get_all_doctor_appointments($pdo, $doctor_id) {
 
 
 function get_hospital_by_id($id) {
-    global $conn;
-    $stmt = $conn->prepare("SELECT * FROM hospitals WHERE id = ?");
-    $stmt->execute([$id]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    try {
+        $db = new Database();
+        $conn = $db->getConnection();
+
+        if (!$conn) {
+            return null;
+        }
+
+        $stmt = $conn->prepare("SELECT * FROM hospitals WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        error_log("Get hospital by ID error: " . $e->getMessage());
+        return null;
+    }
 }
 
 
 function get_appointments_by_user($user_id) {
-    global $conn;
-    $stmt = $conn->prepare("SELECT * FROM appointments WHERE user_id = ? ORDER BY appointment_date DESC, appointment_time DESC");
-    $stmt->execute([$user_id]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    try {
+        $db = new Database();
+        $conn = $db->getConnection();
+
+        if (!$conn) {
+            return [];
+        }
+
+        $stmt = $conn->prepare("SELECT * FROM appointments WHERE user_id = ? ORDER BY appointment_date DESC, appointment_time DESC");
+        $stmt->execute([$user_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        error_log("Get appointments by user error: " . $e->getMessage());
+        return [];
+    }
 }
 
 ?>

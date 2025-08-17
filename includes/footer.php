@@ -17,8 +17,8 @@
             <div>
                 <h4 class="font-bold text-lg mb-4">روابط سريعة</h4>
                 <ul class="space-y-2">
-                    <li><a href="/app-demo/index.php" class="text-gray-400 hover:text-white">الرئيسية</a></li>
-                    <li><a href="/app-demo/search.php" class="text-gray-400 hover:text-white">البحث عن طبيب</a></li>
+                    <li><a href="<?php echo BASE_URL; ?>index.php" class="text-gray-400 hover:text-white">الرئيسية</a></li>
+                    <li><a href="<?php echo BASE_URL; ?>search.php" class="text-gray-400 hover:text-white">البحث عن طبيب</a></li>
                     <li><a href="#" class="text-gray-400 hover:text-white">من نحن</a></li>
                     <li><a href="#" class="text-gray-400 hover:text-white">خدماتنا</a></li>
                 </ul>
@@ -28,7 +28,7 @@
             <div>
                 <h4 class="font-bold text-lg mb-4">حجز المواعيد</h4>
                 <ul class="space-y-2">
-                    <li><a href="/app-demo/patient/appointments.php" class="text-gray-400 hover:text-white">مواعيدي</a></li>
+                    <li><a href="<?php echo BASE_URL; ?>patient/appointments.php" class="text-gray-400 hover:text-white">مواعيدي</a></li>
                     <li><a href="#" class="text-gray-400 hover:text-white">إدارة المستشفيات</a></li>
                 </ul>
             </div>

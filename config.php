@@ -14,10 +14,12 @@ define('DB_PASS', '');
 if (php_sapi_name() !== 'cli') {
     $protocol = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http';
     $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-    $script_name = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
-    // Ensure script_name is not just '/' if it's in the root, otherwise append a slash.
-    $base_path = rtrim($script_name, '/') . '/';
-    define('BASE_URL', $protocol . '://' . $host . $base_path);
+    // Compute the project root folder from the current script path (first path segment)
+    $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/'));
+    $parts = array_values(array_filter(explode('/', trim($scriptDir, '/'))));
+    $baseFolder = $parts[0] ?? '';
+    $basePath = '/' . ($baseFolder !== '' ? $baseFolder . '/' : '');
+    define('BASE_URL', $protocol . '://' . $host . $basePath);
 
     // Start the session only in web mode
     if (session_status() == PHP_SESSION_NONE) {

